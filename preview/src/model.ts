@@ -1,9 +1,9 @@
-import { atom }         from '@core'
-import { createSocket } from '@core'
-import { z }            from 'zod'
+import { atom }    from '@core'
+import { PREVIEW } from '@core'
+import { z }       from 'zod'
 
 export const model = atom(() => {
-  const socket = createSocket({
+  const socket = PREVIEW({
     dataPrefix: 'payload',
     methods: {
       channelsReceived: 'channels.channels-received'
@@ -19,7 +19,7 @@ export const model = atom(() => {
     })
   )
 
-  const $test = socket.restore('channelsReceived', {
+  const $test = socket.box<number>('channelsReceived', {
     default: null,
     validate: testSchema
   })

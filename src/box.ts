@@ -1,70 +1,59 @@
-import { AnyObject }     from '@grnx-utils/types'
-import { createEvent }   from 'effector'
-import { restore }       from 'effector/compat'
-import { z }             from 'zod'
+import { Nullable }                  from '@grnx-utils/types'
+import { createEvent }               from 'effector'
+import { restore }                   from 'effector/compat'
 
-import { PreparedProps } from './interfaces'
-import { BoxOptions }    from './interfaces'
-import { Wrap }          from './interfaces'
+import { BoxOptions }                from './interfaces'
+import { PreparedProps }             from './interfaces'
+import { MethodNotAllowedException } from './shared/exceptions'
+import { transformWithPrefix }       from './shared/helpers'
+import { validateZodSchema }         from './shared/helpers'
+import { Wrap }                      from './shared/utils/types'
 
 export const box = <Methods extends Record<string, string>>([
   $instance,
   { dataPrefix, methods }
 ]: PreparedProps<Methods>) => {
-  return <Result extends AnyObject, Default = null>(
+  return <Result, Default = null>(
     currentMethod: keyof Methods,
     options: BoxOptions<Default>
   ) => {
-    const doneData = createEvent<
-      Default | Result | z.infer<NonNullable<typeof options.validate>>
-    >()
+    const doneData = createEvent<Result | Nullable<Default>>()
 
     // eslint-disable-next-line effector/no-watch
     $instance.watch((instance) => {
-      const methodToSend: string = methods[currentMethod]
-
       if (!instance) return
 
+      const methodToSend: string = methods[currentMethod]
+
       if (!methodToSend) {
-        // TODO: refactor this
-        throw new Error('error')
+        throw new MethodNotAllowedException()
       }
 
-      instance.off(methodToSend)
-
-      instance.on(methodToSend, (data: Wrap<Result, typeof dataPrefix>) => {
-        const payload = dataPrefix ? data[dataPrefix] : data
+      instance.off(methodToSend).on(methodToSend, (
+        data: Wrap<Result> | Result
+      ) => {
+        const payload = transformWithPrefix<Result>(dataPrefix, data)
 
         if (!payload) {
-          throw new Error('error')
+          console.warn('Empty response from the server.')
+          return
         }
 
         if (options.validate) {
-          try {
-            const zodSchema = options.validate
+          const transformed = validateZodSchema<Result>(
+            options.validate,
+            payload
+          )
 
-            const transformedValues = zodSchema.parse(payload) as z.infer<
-              typeof zodSchema
-            >
-
-            doneData(transformedValues)
-          } catch (error) {
-            const isZodError = error instanceof z.ZodError
-
-            if (!isZodError) {
-              // TODO: refactor this
-              throw new Error(error as string)
-            }
-
-            return console.error('zod error')
-          }
+          return transformed && doneData(transformed)
         }
 
-        doneData(payload as Result)
+        doneData(payload)
       })
     })
-    return restore<
-      Default | Result | z.infer<NonNullable<typeof options.validate>>
-    >(doneData, options.default ?? null)
+    return restore<Result | Nullable<Default>>(
+      doneData,
+      options.default ?? null
+    )
   }
 }

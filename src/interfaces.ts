@@ -25,7 +25,10 @@ export interface WebsocketInstance<Methods> {
   Gate: Gate<unknown>
   $instance: Store<Nullable<Socket>>
   // TODO: refactor this
-  box: (method: keyof Methods, opts: BoxOptions<unknown>) => Store<unknown>
+  box: <Result, Default = null>(
+    method: keyof Methods,
+    opts: BoxOptions<Default>
+  ) => Store<Result | Nullable<Default>>
   emit: (...args: any[]) => unknown
 }
 
