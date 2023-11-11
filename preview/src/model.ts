@@ -1,6 +1,5 @@
 import { atom }         from '@core'
 import { createSocket } from '@core'
-import { scope }        from '@core'
 import { z }            from 'zod'
 
 export const model = atom(() => {
@@ -12,7 +11,7 @@ export const model = atom(() => {
     uri: 'http://localhost:6868'
   })
 
-  const socketChild = scope(socket)
+  // const socketChild = scope(socket)
 
   const testSchema = z.array(
     z.object({
@@ -20,7 +19,8 @@ export const model = atom(() => {
     })
   )
 
-  const $test = socket.restore('channelsReceived', null, {
+  const $test = socket.restore('channelsReceived', {
+    default: null,
     validate: testSchema
   })
 
@@ -28,11 +28,11 @@ export const model = atom(() => {
     console.log(val)
   })
 
-  const testEmit = socketChild.emit('channelsReceived')
+  // const testEmit = socketChild.emit('channelsReceived')
 
-  testEmit()
+  // testEmit()
   return {
-    child: socketChild,
+    // child: socketChild,
     socket
   }
 })

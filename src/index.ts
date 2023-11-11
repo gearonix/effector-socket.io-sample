@@ -21,8 +21,9 @@ export type Wrap<Target, Wrapper> = Wrapper extends string
     }
   : Target
 
-interface RestoreMethodOptions {
+interface RestoreMethodOptions<Default> {
   // TODO: refactor this
+  default?: Default
   validate?: z.ZodSchema
 }
 
@@ -34,11 +35,14 @@ export interface CreateSocketProps<Methods extends Record<string, string>> {
   dataPrefix?: string
 }
 
-export interface WebsocketInstance {
+export interface WebsocketInstance<Methods> {
   gate: Gate<unknown>
   $instance: Store<Nullable<Socket>>
   // TODO: refactor this
-  restore: (...args: any[]) => unknown
+  restore: (
+    method: keyof Methods,
+    opts: RestoreMethodOptions<unknown>
+  ) => Store<unknown>
   emit: (...args: any[]) => unknown
 }
 
@@ -48,7 +52,7 @@ export const createSocket = <Methods extends Record<string, string>>({
   methods,
   options,
   uri
-}: CreateSocketProps<Methods>): WebsocketInstance => {
+}: CreateSocketProps<Methods>): WebsocketInstance<Methods> => {
   if (!uri && !instance) {
     throw new Error('error')
   }
@@ -67,13 +71,12 @@ export const createSocket = <Methods extends Record<string, string>>({
     target: getSocketInstanceFx
   })
 
-  const restoreMethod = <Result extends AnyObject, Def = null>(
+  const restoreMethod = <Result extends AnyObject, Default = null>(
     currentMethod: keyof Methods,
-    defaultValue: Def,
-    options: RestoreMethodOptions
+    options: RestoreMethodOptions<Default>
   ) => {
     const doneData = createEvent<
-      Def | Result | z.infer<NonNullable<typeof options.validate>>
+      Default | Result | z.infer<NonNullable<typeof options.validate>>
     >()
 
     // eslint-disable-next-line effector/no-watch
@@ -122,8 +125,8 @@ export const createSocket = <Methods extends Record<string, string>>({
     })
 
     return restore<
-      Def | Result | z.infer<NonNullable<typeof options.validate>>
-    >(doneData, defaultValue)
+      Default | Result | z.infer<NonNullable<typeof options.validate>>
+    >(doneData, options.default ?? null)
   }
 
   const emitMethod = (currentMethod: keyof Methods) => {
