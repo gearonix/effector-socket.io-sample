@@ -25,6 +25,11 @@ io.on('connection', (socket) => {
       }
     ]
   })
+
+  socket.on('channels.string-received', (data) => {
+    console.log('string-received!!!')
+    console.log(data)
+  })
 })
 
 server.listen(6868)

@@ -5,7 +5,8 @@ import { restore }                   from 'effector/compat'
 import { BoxOptions }                from './interfaces'
 import { PreparedProps }             from './interfaces'
 import { MethodNotAllowedException } from './shared/exceptions'
-import { transformWithPrefix }       from './shared/helpers'
+import { parseMethodToSend }         from './shared/helpers'
+import { unwrapPayloadWithPrefix }   from './shared/helpers'
 import { validateZodSchema }         from './shared/helpers'
 import { Wrap }                      from './shared/utils/types'
 
@@ -14,8 +15,8 @@ export const box = <Methods extends Record<string, string>>([
   { dataPrefix, methods }
 ]: PreparedProps<Methods>) => {
   return <Result, Default = null>(
-    currentMethod: keyof Methods,
-    options: BoxOptions<Default>
+    currentMethod: Extract<keyof Methods, string>,
+    options: BoxOptions<Default, Result>
   ) => {
     const doneData = createEvent<Result | Nullable<Default>>()
 
@@ -23,16 +24,12 @@ export const box = <Methods extends Record<string, string>>([
     $instance.watch((instance) => {
       if (!instance) return
 
-      const methodToSend: string = methods[currentMethod]
-
-      if (!methodToSend) {
-        throw new MethodNotAllowedException()
-      }
+      const methodToSend = parseMethodToSend(methods, currentMethod)
 
       instance.off(methodToSend).on(methodToSend, (
         data: Wrap<Result> | Result
       ) => {
-        const payload = transformWithPrefix<Result>(dataPrefix, data)
+        const payload = unwrapPayloadWithPrefix<Result>(dataPrefix, data)
 
         if (!payload) {
           console.warn('Empty response from the server.')

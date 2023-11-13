@@ -6,7 +6,8 @@ export const model = atom(() => {
   const socket = PREVIEW({
     dataPrefix: 'payload',
     methods: {
-      channelsReceived: 'channels.channels-received'
+      channelsReceived: 'channels.channels-received',
+      stringReceived: 'channels.string-received'
     },
     uri: 'http://localhost:6868'
   })
@@ -28,11 +29,12 @@ export const model = atom(() => {
     console.log(val)
   })
 
+  const sendStrings = socket.publisher('stringReceived')
   // const testEmit = socketChild.emit('channelsReceived')
 
   // testEmit()
   return {
-    // child: socketChild,
-    socket
+    Gate: socket.Gate,
+    sendStrings
   }
 })

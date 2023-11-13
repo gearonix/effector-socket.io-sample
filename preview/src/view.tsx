@@ -1,9 +1,16 @@
-import { useGate } from 'effector-react'
+import { useGate }   from 'effector-react'
+import { useEvent }  from 'effector-react'
+import { useEffect } from 'react'
 
-import { model }   from './model.ts'
+import { model }     from './model.ts'
 
 export const View = () => {
-  useGate(model.socket.gate)
+  useGate(model.Gate)
+  const sendStrings = useEvent(model.sendStrings)
+
+  useEffect(() => {
+    sendStrings(2)
+  }, [])
 
   return null
 }

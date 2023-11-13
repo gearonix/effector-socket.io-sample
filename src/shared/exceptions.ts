@@ -7,9 +7,17 @@ export class MethodNotAllowedException extends Error {
 }
 
 export class ValidateSchemaUnknownException extends Error {
-  name = 'JsconfigNotFoundException'
+  name = 'ValidateSchemaUnknownException'
 
   constructor() {
     super('Unknown error when validating a response from the server')
+  }
+}
+
+export class NoUriOrInstanceException extends Error {
+  name = 'NoUriOrInstanceException'
+
+  constructor() {
+    super('You must provide either a uri or an instance socket.io')
   }
 }

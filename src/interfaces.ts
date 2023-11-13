@@ -1,5 +1,6 @@
 import { Nullable }       from '@grnx-utils/types'
 import { Undefinable }    from '@grnx-utils/types'
+import { Effect }         from 'effector'
 import { Store }          from 'effector'
 import { Gate }           from 'effector-react'
 import { ManagerOptions } from 'socket.io-client'
@@ -7,10 +8,9 @@ import { Socket }         from 'socket.io-client'
 import { SocketOptions }  from 'socket.io-client'
 import { z }              from 'zod'
 
-export interface BoxOptions<Default> {
-  // TODO: refactor this
+export interface BoxOptions<Default, Result> {
   default?: Default
-  validate?: z.ZodSchema
+  validate?: z.ZodSchema<Result>
 }
 
 export interface CreateSocketProps<Methods extends Record<string, string>> {
@@ -21,24 +21,7 @@ export interface CreateSocketProps<Methods extends Record<string, string>> {
   dataPrefix?: string
 }
 
-export interface WebsocketInstance<Methods> {
-  Gate: Gate<unknown>
-  $instance: Store<Nullable<Socket>>
-  // TODO: refactor this
-  box: <Result, Default = null>(
-    method: keyof Methods,
-    opts: BoxOptions<Default>
-  ) => Store<Result | Nullable<Default>>
-  emit: (...args: any[]) => unknown
-}
-
 export type PreparedProps<Methods extends Record<string, string>> = [
   Store<Nullable<Socket>>,
   CreateSocketProps<Methods>
 ]
-
-export type Wrap<Target, Wrapper> = Wrapper extends string
-  ? {
-      [Key in Wrapper]: Target
-    }
-  : Target
