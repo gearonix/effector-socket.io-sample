@@ -58,7 +58,8 @@ export const createSubscriber = <Methods extends Record<string, string>>({
         if (options?.validate) {
           const transformed = validateZodSchema<Result>(
             options.validate,
-            payload
+            payload,
+            currentMethod
           )
 
           return transformed && doneData(transformed)

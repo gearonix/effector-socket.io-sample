@@ -6,7 +6,8 @@ import { ValidateSchemaUnknownException } from '../exceptions'
 
 export const validateZodSchema = <Result>(
   zodSchema: ZodSchema<Result>,
-  payload: Result
+  payload: Result,
+  method: string
 ): Undefinable<z.infer<ZodSchema<Result>>> => {
   try {
     return zodSchema.parse(payload)
@@ -17,8 +18,7 @@ export const validateZodSchema = <Result>(
       throw new ValidateSchemaUnknownException()
     }
 
-    console.error('Incorrect response from the server. [Zod]')
-    console.info('\n')
+    console.error(`Incorrect response from the server. [Zod - ${method}]`)
     console.info(error.format())
   }
 }
