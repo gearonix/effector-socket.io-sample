@@ -25,7 +25,7 @@ type SubscribeValue<R, D> = R | Nullable<D>
 export const createSubscriber = <Methods extends Record<string, string>>({
   $instance,
   Gate,
-  logger,
+  log,
   opts
 }: ContextProps<Methods>) => {
   return <Result, Default = null>(
@@ -47,11 +47,11 @@ export const createSubscriber = <Methods extends Record<string, string>>({
       instance.off(methodToSend).on(methodToSend, (
         data: Wrap<Result> | Result
       ) => {
-        logger('received response from server', currentMethod)
+        log('received response from server', currentMethod)
         const payload = unwrapPayloadWithPrefix<Result>(opts.prefix, data)
 
         if (!payload) {
-          console.warn('Empty response from the server.')
+          log('empty response from the server', currentMethod, 'warn')
           return
         }
 

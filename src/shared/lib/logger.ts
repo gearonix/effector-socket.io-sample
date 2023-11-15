@@ -3,11 +3,17 @@ const highlight = (color?: string) =>
     color ? '#000' : '#fff'
   }; padding-left: 4px; padding-right: 4px; font-weight: normal;`
 
+type ConsoleMethods = 'log' | 'warn' | 'error'
+
 export const createLogger = (isEnabled?: boolean) => {
-  return (msg: string, method = 'method') => {
+  return (
+    msg: string,
+    event: string,
+    consoleMethod: ConsoleMethods = 'log'
+  ) => {
     if (isEnabled) {
-      console.log(
-        '%ceffector-socket.io' + `%c${msg}` + `%c[${method}]`,
+      console[consoleMethod](
+        '%ceffector-socket.io' + `%c${msg}` + `%c[${event}]`,
         highlight('#4fb6ed'),
         highlight(),
         'color: #4fedde;'

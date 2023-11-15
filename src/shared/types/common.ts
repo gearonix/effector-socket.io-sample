@@ -6,7 +6,7 @@ import { ManagerOptions } from 'socket.io-client'
 import { Socket }         from 'socket.io-client'
 import { SocketOptions }  from 'socket.io-client'
 
-import { createLogger }   from '../helpers'
+import { createLogger }   from '../lib'
 import { Publisher }      from './methods'
 import { Subscriber }     from './methods'
 
@@ -22,7 +22,7 @@ export interface ConnectOptions<Methods extends Record<string, string>> {
 export interface ContextProps<Methods extends Record<string, string>> {
   $instance: Store<Nullable<Socket>>
   opts: ConnectOptions<Methods>
-  logger: ReturnType<typeof createLogger>
+  log: ReturnType<typeof createLogger>
   Gate: Gate<unknown>
 }
 

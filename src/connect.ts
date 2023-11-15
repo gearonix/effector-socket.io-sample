@@ -35,12 +35,12 @@ export const connect = <Methods extends Record<string, string>>(
     target: getSocketInstanceFx
   })
 
-  const logger = createLogger(opts.logger)
+  const log = createLogger(opts.logger)
 
   const preparedProps: ContextProps<Methods> = {
     $instance,
     Gate: WebsocketGate,
-    logger,
+    log,
     opts
   }
 

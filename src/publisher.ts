@@ -14,7 +14,7 @@ export interface PublisherOptions {
 export const createPublisher = <Methods extends Record<string, string>>({
   $instance,
   Gate,
-  logger,
+  log,
   opts
 }: ContextProps<Methods>) => {
   return <P = void>(
@@ -32,7 +32,7 @@ export const createPublisher = <Methods extends Record<string, string>>({
           wrapPayloadWithPrefix(opts.prefix, params)
         )
 
-        logger('sent a request to the server', method)
+        log('sent a request to the server', method)
       },
       source: $instance
     })
