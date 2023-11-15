@@ -1,18 +1,22 @@
-import { atom }    from '@core'
-import { PREVIEW } from '@core'
-import { sample }  from 'effector'
-import { z }       from 'zod'
+import { createSocket } from '@core'
+import { scope }        from '@core'
+import { z }            from 'zod'
+
+export const atom = <T>(factory: () => T) => factory()
 
 export const model = atom(() => {
-  const socket = PREVIEW({
+  const socket = createSocket({
     dataPrefix: 'payload',
     logger: true,
     methods: {
       channelsReceived: 'channels.channels-received',
+      childChannelsReceived: 'channels.child-channels-received',
       stringReceived: 'channels.string-received'
     },
     uri: 'http://localhost:6868'
   })
+
+  const child = scope(socket)
 
   // const socketChild = scope(socket)
 
@@ -32,11 +36,20 @@ export const model = atom(() => {
   })
 
   const sendStrings = socket.publisher('stringReceived')
-  // const testEmit = socketChild.emit('channelsReceived')
+  const [test, $store] = child.box<string>('childChannelsReceived', {
+    default: null
+  })
 
-  // testEmit()
+  $store.watch((val) => {
+    console.log(val)
+  })
+
+  const publisher = child.publisher('childChannelsReceived')
+
   return {
+    ChildGate: child.Gate,
     Gate: socket.Gate,
+    publisher,
     sendStrings
   }
 })

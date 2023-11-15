@@ -6,15 +6,16 @@ import { io }                       from 'socket.io-client'
 import { Socket }                   from 'socket.io-client'
 
 import { createBox }                from './box'
-import { CreateSocketOptions }      from './interfaces'
-import { PreparedProps }            from './interfaces'
-import { publisher }                from './publisher'
+import { createPublisher }          from './publisher'
 import { NoUriOrInstanceException } from './shared/exceptions'
 import { createLogger }             from './shared/helpers'
+import { ConnectedInstance }        from './shared/interfaces'
+import { CreateSocketOptions }      from './shared/interfaces'
+import { PreparedProps }            from './shared/interfaces'
 
 export const createSocket = <Methods extends Record<string, string>>(
   opts: CreateSocketOptions<Methods>
-) => {
+): ConnectedInstance<Methods> => {
   if (!opts.uri && !opts.instance) {
     throw new NoUriOrInstanceException()
   }
@@ -38,6 +39,7 @@ export const createSocket = <Methods extends Record<string, string>>(
   const logger = createLogger(opts.logger)
 
   const preparedProps: PreparedProps<Methods> = {
+    $instance,
     Gate: WebsocketGate,
     logger,
     opts
@@ -47,6 +49,6 @@ export const createSocket = <Methods extends Record<string, string>>(
     $instance,
     Gate: WebsocketGate,
     box: createBox(preparedProps),
-    publisher: publisher(preparedProps)
+    publisher: createPublisher(preparedProps)
   }
 }

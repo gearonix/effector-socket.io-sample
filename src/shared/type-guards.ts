@@ -4,7 +4,7 @@ import { Undefinable } from '@grnx-utils/types'
 import { Wrap }        from './utils/types'
 
 export const isObject = (value: unknown): value is AnyObject => {
-  return typeof value === 'object' && value !== null && value !== undefined
+  return typeof value === 'object' && value !== null
 }
 
 export const isWrappedResponse = <Result>(

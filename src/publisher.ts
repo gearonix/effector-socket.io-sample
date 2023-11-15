@@ -1,17 +1,27 @@
 import { attach }                from 'effector'
 import { sample }                from 'effector'
 import { createEvent }           from 'effector'
+import { Gate }                  from 'effector-react'
+import { Socket }                from 'socket.io-client'
 
-import { PreparedProps }         from './interfaces'
 import { parseMethodToSend }     from './shared/helpers'
 import { wrapPayloadWithPrefix } from './shared/helpers'
+import { PreparedProps }         from './shared/interfaces'
 
-export const publisher = <Methods extends Record<string, string>>({
+export interface PublisherOptions {
+  OverrideGate?: Gate<Socket>
+}
+
+export const createPublisher = <Methods extends Record<string, string>>({
   $instance,
+  Gate,
   logger,
   opts
 }: PreparedProps<Methods>) => {
-  return <P>(method: Extract<keyof Methods, string>) => {
+  return <P = void>(
+    method: Extract<keyof Methods, string>,
+    methodOptions?: PublisherOptions
+  ) => {
     const sendData = createEvent<P>()
 
     const emitSocketFx = attach({
@@ -28,8 +38,11 @@ export const publisher = <Methods extends Record<string, string>>({
       source: $instance
     })
 
+    const $isMounted = methodOptions?.OverrideGate.status ?? Gate.status
+
     sample({
       clock: sendData,
+      filter: $isMounted,
       target: emitSocketFx
     })
 

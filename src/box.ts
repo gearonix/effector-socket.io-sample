@@ -1,26 +1,28 @@
 import { Nullable }                from '@grnx-utils/types'
 import { createEvent }             from 'effector'
+import { Store }                   from 'effector'
 import { createStore }             from 'effector'
+import { Event }                   from 'effector'
 import { sample }                  from 'effector'
 import { Gate }                    from 'effector-react'
-import { condition }               from 'patronum'
-import { or }                      from 'patronum'
 import { Socket }                  from 'socket.io-client'
 import { z }                       from 'zod'
 
-import { PreparedProps }           from './interfaces'
 import { parseMethodToSend }       from './shared/helpers'
 import { unwrapPayloadWithPrefix } from './shared/helpers'
 import { validateZodSchema }       from './shared/helpers'
+import { PreparedProps }           from './shared/interfaces'
 import { Wrap }                    from './shared/utils/types'
 
 export interface BoxOptions<Default, Result> {
   default?: Default
   validate?: z.ZodSchema<Result>
   override?: {
-    Gate: Gate<unknown>
+    Gate: Gate<Socket>
   }
 }
+
+type BoxValue<R, D> = R | Nullable<D>
 
 export const createBox = <Methods extends Record<string, string>>({
   $instance,
@@ -30,12 +32,12 @@ export const createBox = <Methods extends Record<string, string>>({
 }: PreparedProps<Methods>) => {
   return <Result, Default = null>(
     currentMethod: Extract<keyof Methods, string>,
-    options: BoxOptions<Default, Result>
-  ) => {
+    options?: BoxOptions<Default, Result>
+  ): [Event<BoxValue<Result, Default>>, Store<BoxValue<Result, Default>>] => {
     const doneData = createEvent<Result | Nullable<Default>>()
 
     const $result = createStore<Result | Nullable<Default>>(
-      options.default ?? null
+      options?.default ?? null
     )
 
     const subscribe = (instance: Socket) => {
@@ -52,7 +54,7 @@ export const createBox = <Methods extends Record<string, string>>({
           return
         }
 
-        if (options.validate) {
+        if (options?.validate) {
           const transformed = validateZodSchema<Result>(
             options.validate,
             payload
@@ -74,7 +76,7 @@ export const createBox = <Methods extends Record<string, string>>({
 
     sample({
       clock: doneData,
-      filter: options.override?.Gate.status ?? Gate.status,
+      filter: options?.override?.Gate.status ?? Gate.status,
       target: $result
     })
 

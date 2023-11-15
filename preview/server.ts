@@ -26,9 +26,21 @@ io.on('connection', (socket) => {
     ]
   })
 
+  io.emit('channels.child-channels-received', {
+    payload: [
+      {
+        id: 'test'
+      }
+    ]
+  })
+
   socket.on('channels.string-received', (data) => {
     console.log('string-received!!!')
     console.log(data)
+  })
+
+  socket.on('channels.child-channels-received', () => {
+    console.log('child-channels-received')
   })
 })
 

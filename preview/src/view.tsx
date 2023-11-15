@@ -7,16 +7,18 @@ import { model }     from './model.ts'
 export const View = () => {
   useGate(model.Gate)
   const sendStrings = useEvent(model.sendStrings)
+  const publisher = useEvent(model.publisher)
 
   useEffect(() => {
     sendStrings(2)
+    publisher()
   }, [])
+
+  return <Child />
+}
+
+export const Child = () => {
+  useGate(model.ChildGate)
 
   return null
 }
-
-// export const Child = () => {
-//   useGate(model.child.gate)
-//
-//   return null
-// }

@@ -1,15 +1,19 @@
-import { createEvent }  from 'effector'
-import { createStore }  from 'effector'
-import { sample }       from 'effector'
-import { createGate }   from 'effector-react'
+import { createEvent }       from 'effector'
+import { createStore }       from 'effector'
+import { sample }            from 'effector'
+import { createGate }        from 'effector-react'
+import { Socket }            from 'socket.io-client'
 
-import { createSocket } from './create-socket'
-import { Box }          from './interfaces'
+import { BoxOptions }        from './box'
+import { Box }               from './shared/interfaces'
+import { Publisher }         from './shared/interfaces'
+import { ConnectedInstance } from './shared/interfaces'
+import { ConnectedScope }    from './shared/interfaces'
 
 export const scope = <Methods extends Record<string, string>>(
-  parent: ReturnType<typeof createSocket<Methods>>
-) => {
-  const ChildGate = createGate()
+  parent: ConnectedInstance<Methods>
+): ConnectedScope<Methods> => {
+  const ChildGate = createGate<Socket>()
 
   const addEnabledEvent = createEvent<string>()
   const clearEnabledEvents = createEvent<void>()
@@ -32,20 +36,32 @@ export const scope = <Methods extends Record<string, string>>(
     target: clearEnabledEvents
   })
 
-  const box = ([method, options]: Parameters<Box<Methods>>) => {
+  const box = <Result, Default = null>(...args: Parameters<Box<Methods>>) => {
+    const [method, options = {}] = args
+
     addEnabledEvent(method)
 
-    return parent.box(method, {
-      ...options,
+    return parent.box<Result, Default>(method, {
+      ...(options as BoxOptions<Default, Result>),
       override: {
         Gate: ChildGate
       }
     })
   }
 
+  const publisher = <P = void>(
+    ...[method, options = {}]: Parameters<Publisher<Methods>>
+  ) => {
+    return parent.publisher<P>(method, {
+      ...options,
+      OverrideGate: ChildGate
+    })
+  }
+
   return {
     ...parent,
+    Gate: ChildGate,
     box,
-    gate: ChildGate
+    publisher
   }
 }
