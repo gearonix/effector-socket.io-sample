@@ -1,4 +1,4 @@
-export * from './logger'
+export { createLogger } from './logger'
 export * from './parse-method'
 export * from './payload-wrappers'
 export * from './types'

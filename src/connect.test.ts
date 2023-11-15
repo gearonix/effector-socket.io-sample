@@ -69,7 +69,7 @@ describe('connect', () => {
   })
 
   it('should work when effector gate is opened and instance not provided', async () => {
-    const socket = connect()
+    const socket = connect(connectOptions)
 
     socket.Gate.open()
 

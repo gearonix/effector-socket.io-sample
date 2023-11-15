@@ -1,4 +1,4 @@
-const highlight = (color?: string) =>
+export const highlight = (color = 'none') =>
   `background-color: ${color}; color: ${
     color ? '#000' : '#fff'
   }; padding-left: 4px; padding-right: 4px; font-weight: normal;`
