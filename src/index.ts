@@ -1,3 +1,3 @@
-export { createSocket } from './create-socket'
+export { connect } from './connect'
 export { scope } from './scope'
-export * from './shared/interfaces'
+export * from './shared/types/common'

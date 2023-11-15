@@ -3,24 +3,23 @@ import { restore }                  from 'effector'
 import { sample }                   from 'effector'
 import { createGate }               from 'effector-react'
 import { io }                       from 'socket.io-client'
-import { Socket }                   from 'socket.io-client'
 
-import { createBox }                from './box'
 import { createPublisher }          from './publisher'
 import { NoUriOrInstanceException } from './shared/exceptions'
-import { createLogger }             from './shared/helpers'
-import { ConnectedInstance }        from './shared/interfaces'
-import { CreateSocketOptions }      from './shared/interfaces'
-import { PreparedProps }            from './shared/interfaces'
+import { createLogger }             from './shared/lib'
+import { ConnectedInstance }        from './shared/types'
+import { ConnectOptions }           from './shared/types'
+import { ContextProps }             from './shared/types'
+import { createSubscriber }         from './subscribe'
 
-export const createSocket = <Methods extends Record<string, string>>(
-  opts: CreateSocketOptions<Methods>
+export const connect = <Methods extends Record<string, string>>(
+  opts: ConnectOptions<Methods>
 ): ConnectedInstance<Methods> => {
   if (!opts.uri && !opts.instance) {
     throw new NoUriOrInstanceException()
   }
 
-  const WebsocketGate = createGate<Socket>()
+  const WebsocketGate = createGate<unknown>()
 
   const getSocketInstanceFx = createEffect(
     () => opts.instance ?? io(opts.uri!, opts.options)
@@ -38,7 +37,7 @@ export const createSocket = <Methods extends Record<string, string>>(
 
   const logger = createLogger(opts.logger)
 
-  const preparedProps: PreparedProps<Methods> = {
+  const preparedProps: ContextProps<Methods> = {
     $instance,
     Gate: WebsocketGate,
     logger,
@@ -48,7 +47,7 @@ export const createSocket = <Methods extends Record<string, string>>(
   return {
     $instance,
     Gate: WebsocketGate,
-    box: createBox(preparedProps),
-    publisher: createPublisher(preparedProps)
+    publisher: createPublisher(preparedProps),
+    subscribe: createSubscriber(preparedProps)
   }
 }

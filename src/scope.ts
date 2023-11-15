@@ -2,18 +2,17 @@ import { createEvent }       from 'effector'
 import { createStore }       from 'effector'
 import { sample }            from 'effector'
 import { createGate }        from 'effector-react'
-import { Socket }            from 'socket.io-client'
 
-import { BoxOptions }        from './box'
-import { Box }               from './shared/interfaces'
-import { Publisher }         from './shared/interfaces'
-import { ConnectedInstance } from './shared/interfaces'
-import { ConnectedScope }    from './shared/interfaces'
+import { Publisher }         from './shared/types'
+import { Subscriber }        from './shared/types'
+import { ConnectedInstance } from './shared/types'
+import { ConnectedScope }    from './shared/types'
+import { SubscribeOptions }  from './subscribe'
 
 export const scope = <Methods extends Record<string, string>>(
   parent: ConnectedInstance<Methods>
 ): ConnectedScope<Methods> => {
-  const ChildGate = createGate<Socket>()
+  const ChildGate = createGate<unknown>()
 
   const addEnabledEvent = createEvent<string>()
   const clearEnabledEvents = createEvent<void>()
@@ -36,16 +35,16 @@ export const scope = <Methods extends Record<string, string>>(
     target: clearEnabledEvents
   })
 
-  const box = <Result, Default = null>(...args: Parameters<Box<Methods>>) => {
+  const subscribe = <Result, Default = null>(
+    ...args: Parameters<Subscriber<Methods>>
+  ) => {
     const [method, options = {}] = args
 
     addEnabledEvent(method)
 
-    return parent.box<Result, Default>(method, {
-      ...(options as BoxOptions<Default, Result>),
-      override: {
-        Gate: ChildGate
-      }
+    return parent.subscribe<Result, Default>(method, {
+      ...(options as SubscribeOptions<Default, Result>),
+      OverrideGate: ChildGate
     })
   }
 
@@ -61,7 +60,7 @@ export const scope = <Methods extends Record<string, string>>(
   return {
     ...parent,
     Gate: ChildGate,
-    box,
-    publisher
+    publisher,
+    subscribe
   }
 }

@@ -1,15 +1,14 @@
 import { attach }                from 'effector'
-import { sample }                from 'effector'
 import { createEvent }           from 'effector'
+import { sample }                from 'effector'
 import { Gate }                  from 'effector-react'
-import { Socket }                from 'socket.io-client'
 
-import { parseMethodToSend }     from './shared/helpers'
-import { wrapPayloadWithPrefix } from './shared/helpers'
-import { PreparedProps }         from './shared/interfaces'
+import { parseMethodToSend }     from './shared/lib'
+import { wrapPayloadWithPrefix } from './shared/lib'
+import { ContextProps }          from './shared/types'
 
 export interface PublisherOptions {
-  OverrideGate?: Gate<Socket>
+  OverrideGate?: Gate<unknown>
 }
 
 export const createPublisher = <Methods extends Record<string, string>>({
@@ -17,7 +16,7 @@ export const createPublisher = <Methods extends Record<string, string>>({
   Gate,
   logger,
   opts
-}: PreparedProps<Methods>) => {
+}: ContextProps<Methods>) => {
   return <P = void>(
     method: Extract<keyof Methods, string>,
     methodOptions?: PublisherOptions
@@ -30,15 +29,15 @@ export const createPublisher = <Methods extends Record<string, string>>({
 
         socket.emit(
           parseMethodToSend(opts.methods, method),
-          wrapPayloadWithPrefix(opts.dataPrefix, params)
+          wrapPayloadWithPrefix(opts.prefix, params)
         )
 
-        logger(`sent a request to the server (${method})`)
+        logger('sent a request to the server', method)
       },
       source: $instance
     })
 
-    const $isMounted = methodOptions?.OverrideGate.status ?? Gate.status
+    const $isMounted = methodOptions?.OverrideGate?.status ?? Gate.status
 
     sample({
       clock: sendData,

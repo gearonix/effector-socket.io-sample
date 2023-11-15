@@ -1,39 +1,40 @@
 import { Nullable }                from '@grnx-utils/types'
 import { createEvent }             from 'effector'
-import { Store }                   from 'effector'
 import { createStore }             from 'effector'
 import { Event }                   from 'effector'
 import { sample }                  from 'effector'
+import { Store }                   from 'effector'
 import { Gate }                    from 'effector-react'
 import { Socket }                  from 'socket.io-client'
 import { z }                       from 'zod'
 
-import { parseMethodToSend }       from './shared/helpers'
-import { unwrapPayloadWithPrefix } from './shared/helpers'
-import { validateZodSchema }       from './shared/helpers'
-import { PreparedProps }           from './shared/interfaces'
-import { Wrap }                    from './shared/utils/types'
+import { parseMethodToSend }       from './shared/lib'
+import { unwrapPayloadWithPrefix } from './shared/lib'
+import { validateZodSchema }       from './shared/lib'
+import { Wrap }                    from './shared/lib'
+import { ContextProps }            from './shared/types'
 
-export interface BoxOptions<Default, Result> {
+export interface SubscribeOptions<Default, Result> {
   default?: Default
   validate?: z.ZodSchema<Result>
-  override?: {
-    Gate: Gate<Socket>
-  }
+  OverrideGate?: Gate<unknown>
 }
 
-type BoxValue<R, D> = R | Nullable<D>
+type SubscribeValue<R, D> = R | Nullable<D>
 
-export const createBox = <Methods extends Record<string, string>>({
+export const createSubscriber = <Methods extends Record<string, string>>({
   $instance,
   Gate,
   logger,
   opts
-}: PreparedProps<Methods>) => {
+}: ContextProps<Methods>) => {
   return <Result, Default = null>(
     currentMethod: Extract<keyof Methods, string>,
-    options?: BoxOptions<Default, Result>
-  ): [Event<BoxValue<Result, Default>>, Store<BoxValue<Result, Default>>] => {
+    options?: SubscribeOptions<Default, Result>
+  ): [
+    Event<SubscribeValue<Result, Default>>,
+    Store<SubscribeValue<Result, Default>>
+  ] => {
     const doneData = createEvent<Result | Nullable<Default>>()
 
     const $result = createStore<Result | Nullable<Default>>(
@@ -46,8 +47,8 @@ export const createBox = <Methods extends Record<string, string>>({
       instance.off(methodToSend).on(methodToSend, (
         data: Wrap<Result> | Result
       ) => {
-        logger(`received response from server (${methodToSend})`)
-        const payload = unwrapPayloadWithPrefix<Result>(opts.dataPrefix, data)
+        logger('received response from server', currentMethod)
+        const payload = unwrapPayloadWithPrefix<Result>(opts.prefix, data)
 
         if (!payload) {
           console.warn('Empty response from the server.')
@@ -76,7 +77,7 @@ export const createBox = <Methods extends Record<string, string>>({
 
     sample({
       clock: doneData,
-      filter: options?.override?.Gate.status ?? Gate.status,
+      filter: options?.OverrideGate?.status ?? Gate.status,
       target: $result
     })
 

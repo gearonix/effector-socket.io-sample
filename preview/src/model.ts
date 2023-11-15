@@ -1,18 +1,18 @@
-import { createSocket } from '@core'
-import { scope }        from '@core'
-import { z }            from 'zod'
+import { connect } from '@core'
+import { scope }   from '@core'
+import { z }       from 'zod'
 
 export const atom = <T>(factory: () => T) => factory()
 
 export const model = atom(() => {
-  const socket = createSocket({
-    dataPrefix: 'payload',
+  const socket = connect({
     logger: true,
     methods: {
       channelsReceived: 'channels.channels-received',
       childChannelsReceived: 'channels.child-channels-received',
       stringReceived: 'channels.string-received'
     },
+    prefix: 'payload',
     uri: 'http://localhost:6868'
   })
 
@@ -26,7 +26,7 @@ export const model = atom(() => {
     })
   )
 
-  const [onChannelsReceived, $test] = socket.box('channelsReceived', {
+  const [onChannelsReceived, $test] = socket.subscribe('channelsReceived', {
     default: null,
     validate: testSchema
   })
@@ -36,7 +36,7 @@ export const model = atom(() => {
   })
 
   const sendStrings = socket.publisher('stringReceived')
-  const [test, $store] = child.box<string>('childChannelsReceived', {
+  const [test, $store] = child.subscribe<string>('childChannelsReceived', {
     default: null
   })
 
