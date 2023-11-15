@@ -6,19 +6,24 @@ import { PreparedProps }         from './interfaces'
 import { parseMethodToSend }     from './shared/helpers'
 import { wrapPayloadWithPrefix } from './shared/helpers'
 
-export const publisher = <Methods extends Record<string, string>>([
+export const publisher = <Methods extends Record<string, string>>({
   $instance,
-  { dataPrefix, methods }
-]: PreparedProps<Methods>) => {
+  logger,
+  opts
+}: PreparedProps<Methods>) => {
   return <P>(method: Extract<keyof Methods, string>) => {
     const sendData = createEvent<P>()
 
     const emitSocketFx = attach({
       effect: (socket, params: P) => {
-        const dataToSend = wrapPayloadWithPrefix(dataPrefix, params)
-        const parsedMethod = parseMethodToSend(methods, method)
+        if (!socket) return
 
-        socket?.emit(parsedMethod, dataToSend)
+        socket.emit(
+          parseMethodToSend(opts.methods, method),
+          wrapPayloadWithPrefix(opts.dataPrefix, params)
+        )
+
+        logger(`sent a request to the server (${method})`)
       },
       source: $instance
     })

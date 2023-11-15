@@ -1,35 +1,51 @@
-import { Nullable }                  from '@grnx-utils/types'
-import { createEvent }               from 'effector'
-import { restore }                   from 'effector/compat'
+import { Nullable }                from '@grnx-utils/types'
+import { createEvent }             from 'effector'
+import { createStore }             from 'effector'
+import { sample }                  from 'effector'
+import { Gate }                    from 'effector-react'
+import { condition }               from 'patronum'
+import { or }                      from 'patronum'
+import { Socket }                  from 'socket.io-client'
+import { z }                       from 'zod'
 
-import { BoxOptions }                from './interfaces'
-import { PreparedProps }             from './interfaces'
-import { MethodNotAllowedException } from './shared/exceptions'
-import { parseMethodToSend }         from './shared/helpers'
-import { unwrapPayloadWithPrefix }   from './shared/helpers'
-import { validateZodSchema }         from './shared/helpers'
-import { Wrap }                      from './shared/utils/types'
+import { PreparedProps }           from './interfaces'
+import { parseMethodToSend }       from './shared/helpers'
+import { unwrapPayloadWithPrefix } from './shared/helpers'
+import { validateZodSchema }       from './shared/helpers'
+import { Wrap }                    from './shared/utils/types'
 
-export const box = <Methods extends Record<string, string>>([
+export interface BoxOptions<Default, Result> {
+  default?: Default
+  validate?: z.ZodSchema<Result>
+  override?: {
+    Gate: Gate<unknown>
+  }
+}
+
+export const createBox = <Methods extends Record<string, string>>({
   $instance,
-  { dataPrefix, methods }
-]: PreparedProps<Methods>) => {
+  Gate,
+  logger,
+  opts
+}: PreparedProps<Methods>) => {
   return <Result, Default = null>(
     currentMethod: Extract<keyof Methods, string>,
     options: BoxOptions<Default, Result>
   ) => {
     const doneData = createEvent<Result | Nullable<Default>>()
 
-    // eslint-disable-next-line effector/no-watch
-    $instance.watch((instance) => {
-      if (!instance) return
+    const $result = createStore<Result | Nullable<Default>>(
+      options.default ?? null
+    )
 
-      const methodToSend = parseMethodToSend(methods, currentMethod)
+    const subscribe = (instance: Socket) => {
+      const methodToSend = parseMethodToSend(opts.methods, currentMethod)
 
       instance.off(methodToSend).on(methodToSend, (
         data: Wrap<Result> | Result
       ) => {
-        const payload = unwrapPayloadWithPrefix<Result>(dataPrefix, data)
+        logger(`received response from server (${methodToSend})`)
+        const payload = unwrapPayloadWithPrefix<Result>(opts.dataPrefix, data)
 
         if (!payload) {
           console.warn('Empty response from the server.')
@@ -47,10 +63,21 @@ export const box = <Methods extends Record<string, string>>([
 
         doneData(payload)
       })
+    }
+
+    sample({
+      clock: $instance,
+      filter: (ins) => Boolean(ins),
+      fn: (instance) => subscribe(instance!),
+      source: $instance
     })
-    return restore<Result | Nullable<Default>>(
-      doneData,
-      options.default ?? null
-    )
+
+    sample({
+      clock: doneData,
+      filter: options.override?.Gate.status ?? Gate.status,
+      target: $result
+    })
+
+    return [doneData, $result]
   }
 }

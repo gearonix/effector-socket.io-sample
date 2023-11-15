@@ -5,14 +5,15 @@ import { createGate }               from 'effector-react'
 import { io }                       from 'socket.io-client'
 import { Socket }                   from 'socket.io-client'
 
-import { box }                      from './box'
-import { CreateSocketProps }        from './interfaces'
+import { createBox }                from './box'
+import { CreateSocketOptions }      from './interfaces'
 import { PreparedProps }            from './interfaces'
 import { publisher }                from './publisher'
 import { NoUriOrInstanceException } from './shared/exceptions'
+import { createLogger }             from './shared/helpers'
 
 export const createSocket = <Methods extends Record<string, string>>(
-  opts: CreateSocketProps<Methods>
+  opts: CreateSocketOptions<Methods>
 ) => {
   if (!opts.uri && !opts.instance) {
     throw new NoUriOrInstanceException()
@@ -34,12 +35,18 @@ export const createSocket = <Methods extends Record<string, string>>(
     target: getSocketInstanceFx
   })
 
-  const preparedProps: PreparedProps<Methods> = [$instance, opts]
+  const logger = createLogger(opts.logger)
+
+  const preparedProps: PreparedProps<Methods> = {
+    Gate: WebsocketGate,
+    logger,
+    opts
+  }
 
   return {
     $instance,
     Gate: WebsocketGate,
-    box: box(preparedProps),
+    box: createBox(preparedProps),
     publisher: publisher(preparedProps)
   }
 }

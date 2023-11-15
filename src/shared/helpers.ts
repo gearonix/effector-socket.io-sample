@@ -55,3 +55,11 @@ export const parseMethodToSend = <Methods extends AnyObject>(
 
   throw new MethodNotAllowedException()
 }
+
+export const createLogger = (isEnabled?: boolean) => {
+  return (msg: string) => {
+    if (isEnabled) {
+      console.log(`[effector-socket.io]: ${msg}`)
+    }
+  }
+}
