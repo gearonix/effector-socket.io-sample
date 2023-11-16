@@ -1,4 +1,4 @@
-export const websocketMethods = {
+export const methods = {
   fetchPosts: 'namespace.fetch-posts',
   messageSent: 'namespace.message-sent',
   postsReceived: 'namespace.posts-received',

@@ -51,7 +51,6 @@ export const publisherMapper = <Methods extends Record<string, string>>({
       clock: [$instance, methodOptions.OverrideGate?.status],
       fn: (publishers) => {
         publishers.forEach(sendData)
-        console.log(publishers)
       },
       source: publishers.$items
     })

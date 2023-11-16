@@ -1,7 +1,7 @@
 import { ReactNode }  from 'react'
 import { createRoot } from 'react-dom/client'
 
-import { Parent }     from './src/parent.tsx'
+import { Entrypoint } from './src/entrypoint'
 
 const rootElement = document.querySelector('#app')
 
@@ -11,4 +11,4 @@ if (!rootElement) {
 
 const root = createRoot(rootElement)
 
-root.render((<Parent />) as ReactNode)
+root.render((<Entrypoint />) as ReactNode)

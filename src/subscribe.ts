@@ -9,15 +9,24 @@ import { Gate }                    from 'effector-react'
 import { Socket }                  from 'socket.io-client'
 import { z }                       from 'zod'
 
+import { publisherMapper }         from './publisher'
 import { parseMethodToSend }       from './shared/lib'
 import { unwrapPayloadWithPrefix } from './shared/lib'
 import { validateZodSchema }       from './shared/lib'
 import { Wrap }                    from './shared/lib'
 import { ContextProps }            from './shared/types'
 
-export interface SubscribeOptions<Default, Result> {
+export interface SubscribeOptions<
+  Default,
+  Result,
+  Methods = Record<string, string>
+> {
   default?: Default
   schema?: z.ZodSchema<Result>
+  publish?: {
+    method: Extract<keyof Methods, string>
+    params?: unknown
+  }
   OverrideGate?: Gate<unknown>
 }
 
@@ -40,7 +49,7 @@ export const subscriberMapper = <
 ) => {
   return <Result, Default = Result>(
     currentMethod: Extract<keyof Methods, string>,
-    options?: SubscribeOptions<Default, Result>
+    options?: SubscribeOptions<Default, Result, Methods>
   ): SubscriberResult<R, Result, Default> => {
     const doneData = createEvent<Result | Nullable<Default>>()
 
@@ -50,6 +59,15 @@ export const subscriberMapper = <
 
     const subscribe = (instance: Socket) => {
       const methodToSend = parseMethodToSend(opts.methods, currentMethod)
+
+      if (options?.publish) {
+        const { method, params } = options.publish
+
+        const mapper = publisherMapper({ $instance, Gate, log, opts })
+        const publish = mapper<unknown>(method)
+
+        publish(params)
+      }
 
       instance.off(methodToSend).on(methodToSend, (
         data: Wrap<Result> | Result
@@ -77,8 +95,8 @@ export const subscriberMapper = <
     }
 
     sample({
-      clock: $instance,
-      filter: (ins) => Boolean(ins),
+      clock: [$instance, options?.OverrideGate?.status ?? Gate.status],
+      filter: (ins, status) => Boolean(ins && status),
       fn: (instance) => subscribe(instance!),
       source: $instance
     })

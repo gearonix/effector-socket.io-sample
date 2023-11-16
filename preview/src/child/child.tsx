@@ -1,8 +1,7 @@
 import { useGate }    from 'effector-react'
 import { useUnit }    from 'effector-react'
-import { useEffect }  from 'react'
 
-import { childModel } from './model.ts'
+import { childModel } from './model'
 
 export const Child = () => {
   useGate(childModel.socket.Gate)

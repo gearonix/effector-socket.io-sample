@@ -2,9 +2,9 @@ import { useGate }   from 'effector-react'
 import { useUnit }   from 'effector-react'
 import { useState }  from 'react'
 
-import { Child }     from './child/child.tsx'
+import { Child }     from '../child/child.tsx'
+import { Message }   from '../shared/interfaces.ts'
 import { homeModel } from './model.ts'
-import { Message }   from './shared/interfaces.ts'
 
 export const Parent = () => {
   const [isChildOpen, setChildOpen] = useState(false)
@@ -21,6 +21,8 @@ export const Parent = () => {
   const onClick = () => {
     sendMessage({ message: 'Hello world!' })
   }
+
+  console.log(messages)
 
   return (
     <div>

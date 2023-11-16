@@ -1,0 +1,1 @@
+export { Parent } from './parent'
