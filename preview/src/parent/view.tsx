@@ -1,10 +1,8 @@
-import                    './style.css'
-
 import { useGate }   from 'effector-react'
 import { useUnit }   from 'effector-react'
 import { useState }  from 'react'
 
-import { Child }     from '../child/view'
+import { Child }     from '../child'
 import { Message }   from '../shared/interfaces'
 import { homeModel } from './model'
 

@@ -1,5 +1,3 @@
-import                     '../parent/style.css'
-
 import { useGate }    from 'effector-react'
 import { useUnit }    from 'effector-react'
 

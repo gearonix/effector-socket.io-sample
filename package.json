@@ -21,6 +21,7 @@
   "scripts": {
     "build": "yarn lint --quiet && rollup -c --configPlugin typescript",
     "dev": "yarn build --watch",
+    "preview": "yarn install && yarn workspace preview run dev",
     "test": "jest",
     "test:watch": "yarn test --watchAll",
     "lint": "eslint --ext .ts,.tsx src",
