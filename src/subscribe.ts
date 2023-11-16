@@ -16,7 +16,7 @@ import { ContextProps }            from './shared/types'
 
 export interface SubscribeOptions<Default, Result> {
   default?: Default
-  validate?: z.ZodSchema<Result>
+  schema?: z.ZodSchema<Result>
   OverrideGate?: Gate<unknown>
 }
 
@@ -28,7 +28,7 @@ export const createSubscriber = <Methods extends Record<string, string>>({
   log,
   opts
 }: ContextProps<Methods>) => {
-  return <Result, Default = null>(
+  return <Result, Default = Result>(
     currentMethod: Extract<keyof Methods, string>,
     options?: SubscribeOptions<Default, Result>
   ): [
@@ -55,9 +55,9 @@ export const createSubscriber = <Methods extends Record<string, string>>({
           return
         }
 
-        if (options?.validate) {
+        if (options?.schema) {
           const transformed = validateZodSchema<Result>(
-            options.validate,
+            options.schema,
             payload,
             currentMethod
           )

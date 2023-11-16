@@ -1,7 +1,7 @@
 import { ReactNode }  from 'react'
 import { createRoot } from 'react-dom/client'
 
-import { View }       from './src/view'
+import { Parent }     from './src/parent.tsx'
 
 const rootElement = document.querySelector('#app')
 
@@ -11,4 +11,4 @@ if (!rootElement) {
 
 const root = createRoot(rootElement)
 
-root.render((<View />) as ReactNode)
+root.render((<Parent />) as ReactNode)

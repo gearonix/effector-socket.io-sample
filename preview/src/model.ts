@@ -1,55 +1,27 @@
 import { connect } from '@core'
-import { scope }   from '@core'
-import { z }       from 'zod'
 
-export const atom = <T>(factory: () => T) => factory()
+import { atom }    from './shared/atom.ts'
+import { Message } from './shared/interfaces.ts'
 
-export const model = atom(() => {
+export const homeModel = atom(() => {
   const socket = connect({
     logger: true,
     methods: {
-      channelsReceived: 'channels.channels-received',
-      childChannelsReceived: 'channels.child-channels-received',
-      stringReceived: 'channels.string-received'
+      fetchPosts: 'namespace.fetch-posts',
+      messageSent: 'namespace.message-sent',
+      postsReceived: 'namespace.posts-received',
+      sendMessage: 'namespace.send-message'
     },
     prefix: 'payload',
     uri: 'http://localhost:6868'
   })
 
-  const child = scope(socket)
-
-  // const socketChild = scope(socket)
-
-  const testSchema = z.array(
-    z.object({
-      id: z.string()
-    })
-  )
-
-  const [onChannelsReceived, $test] = socket.subscribe('channelsReceived', {
-    default: null,
-    validate: testSchema
-  })
-
-  $test.watch((val) => {
-    console.log(val)
-  })
-
-  const sendStrings = socket.publisher('stringReceived')
-  const [test, $store] = child.subscribe<string>('childChannelsReceived', {
-    default: null
-  })
-
-  $store.watch((val) => {
-    console.log(val)
-  })
-
-  const publisher = child.publisher('childChannelsReceived')
+  const [messageSent, $messages] = socket.subscribe<Message[]>('messageSent')
+  const sendMessage = socket.publisher<Pick<Message, 'message'>>('sendMessage')
 
   return {
-    ChildGate: child.Gate,
-    Gate: socket.Gate,
-    publisher,
-    sendStrings
+    $messages,
+    sendMessage,
+    socket
   }
 })
