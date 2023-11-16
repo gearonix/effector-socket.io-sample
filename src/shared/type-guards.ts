@@ -1,7 +1,7 @@
 import { AnyObject }   from '@grnx-utils/types'
 import { Undefinable } from '@grnx-utils/types'
 
-import { Wrap }        from './lib/types'
+import { Wrap }        from './types/lib'
 
 export const isObject = (value: unknown): value is AnyObject => {
   return typeof value === 'object' && value !== null
