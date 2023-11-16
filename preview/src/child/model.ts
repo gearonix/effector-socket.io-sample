@@ -10,11 +10,10 @@ export const childModel = atom(() => {
 
   const fetchPosts = child.publisher('fetchPosts')
 
-  const [postsReceived, $posts] = child.subscribe<Post[]>('postsReceived', {
+  const $posts = child.restore<Post[]>('postsReceived', {
     default: [],
     schema: postsSchema
   })
-
   return {
     $posts,
     fetchPosts,

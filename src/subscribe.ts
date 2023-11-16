@@ -1,4 +1,5 @@
 import { Nullable }                from '@grnx-utils/types'
+import { Undefinable }             from '@grnx-utils/types'
 import { createEvent }             from 'effector'
 import { createStore }             from 'effector'
 import { Event }                   from 'effector'
@@ -20,21 +21,27 @@ export interface SubscribeOptions<Default, Result> {
   OverrideGate?: Gate<unknown>
 }
 
+type SubscriberReturnMappers = 'restore' | 'event'
+
 type SubscribeValue<R, D> = R | Nullable<D>
 
-export const createSubscriber = <Methods extends Record<string, string>>({
-  $instance,
-  Gate,
-  log,
-  opts
-}: ContextProps<Methods>) => {
+type SubscriberResult<T, R, D> = T extends 'restore'
+  ? Store<SubscribeValue<R, D>>
+  : T extends 'event'
+  ? Event<SubscribeValue<R, D>>
+  : [Event<SubscribeValue<R, D>>, Store<SubscribeValue<R, D>>]
+
+export const createSubscriber = <
+  Methods extends Record<string, string>,
+  R extends SubscriberReturnMappers | void = void
+>(
+  { $instance, Gate, log, opts }: ContextProps<Methods>,
+  resultMapper?: R
+) => {
   return <Result, Default = Result>(
     currentMethod: Extract<keyof Methods, string>,
     options?: SubscribeOptions<Default, Result>
-  ): [
-    Event<SubscribeValue<Result, Default>>,
-    Store<SubscribeValue<Result, Default>>
-  ] => {
+  ): SubscriberResult<R, Result, Default> => {
     const doneData = createEvent<Result | Nullable<Default>>()
 
     const $result = createStore<Result | Nullable<Default>>(
@@ -82,6 +89,12 @@ export const createSubscriber = <Methods extends Record<string, string>>({
       target: $result
     })
 
-    return [doneData, $result]
+    if (!resultMapper) {
+      return [doneData, $result] as SubscriberResult<R, Result, Default>
+    }
+
+    const resultToReturn = resultMapper === 'restore' ? $result : doneData
+
+    return resultToReturn as SubscriberResult<R, Result, Default>
   }
 }

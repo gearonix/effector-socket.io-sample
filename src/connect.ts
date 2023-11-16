@@ -47,7 +47,9 @@ export const connect = <Methods extends Record<string, string>>(
   return {
     $instance,
     Gate: WebsocketGate,
+    event: createSubscriber(preparedProps, 'event'),
     publisher: createPublisher(preparedProps),
+    restore: createSubscriber(preparedProps, 'restore'),
     subscribe: createSubscriber(preparedProps)
   }
 }

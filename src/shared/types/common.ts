@@ -7,7 +7,9 @@ import { Socket }         from 'socket.io-client'
 import { SocketOptions }  from 'socket.io-client'
 
 import { createLogger }   from '../lib'
+import { Event }          from './methods'
 import { Publisher }      from './methods'
+import { Restore }        from './methods'
 import { Subscriber }     from './methods'
 
 export interface ConnectOptions<Methods extends Record<string, string>> {
@@ -31,7 +33,13 @@ export interface ConnectedInstance<Methods extends Record<string, string>> {
   Gate: Gate<unknown>
   subscribe: Subscriber<Methods>
   publisher: Publisher<Methods>
+  restore: Restore<Methods>
+  event: Event<Methods>
 }
+
+export type ConnectedInstanceKeys = keyof ConnectedInstance<
+  Record<string, string>
+>
 
 export type ConnectedScope<Methods extends Record<string, string>> =
   ConnectedInstance<Methods>

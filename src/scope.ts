@@ -1,25 +1,28 @@
-import { createEvent }       from 'effector'
-import { createStore }       from 'effector'
-import { sample }            from 'effector'
-import { createGate }        from 'effector-react'
+import { createEvent }           from 'effector'
+import { createStore }           from 'effector'
+import { sample }                from 'effector'
+import { createGate }            from 'effector-react'
 
-import { Publisher }         from './shared/types'
-import { Subscriber }        from './shared/types'
-import { ConnectedInstance } from './shared/types'
-import { ConnectedScope }    from './shared/types'
-import { SubscribeOptions }  from './subscribe'
+import { ConnectedInstanceKeys } from './shared/types'
+import { Event }                 from './shared/types'
+import { Restore }               from './shared/types'
+import { Publisher }             from './shared/types'
+import { Subscriber }            from './shared/types'
+import { ConnectedInstance }     from './shared/types'
+import { ConnectedScope }        from './shared/types'
+import { SubscribeOptions }      from './subscribe'
 
 export const scope = <Methods extends Record<string, string>>(
   parent: ConnectedInstance<Methods>
 ): ConnectedScope<Methods> => {
   const ChildGate = createGate<unknown>()
 
-  const addEnabledEvent = createEvent<string>()
-  const clearEnabledEvents = createEvent<void>()
+  const addSubscribedEvent = createEvent<string>()
+  const clearSubscriberEvents = createEvent<void>()
 
-  const $enabledEvents = createStore<string[]>([])
-    .on(addEnabledEvent, (events, method) => [...events, method])
-    .reset(clearEnabledEvents)
+  const $subscribedEvents = createStore<string[]>([])
+    .on(addSubscribedEvent, (events, method) => [...events, method])
+    .reset(clearSubscriberEvents)
 
   sample({
     clock: ChildGate.close,
@@ -29,24 +32,28 @@ export const scope = <Methods extends Record<string, string>>(
       })
     },
     source: {
-      events: $enabledEvents,
+      events: $subscribedEvents,
       instance: parent.$instance
     },
-    target: clearEnabledEvents
+    target: clearSubscriberEvents
   })
 
-  const subscribe = <Result, Default = null>(
-    ...args: Parameters<Subscriber<Methods>>
-  ) => {
-    const [method, options = {}] = args
+  const subscribeMapper = (
+      mapperMethod: Extract<
+        ConnectedInstanceKeys,
+        'restore' | 'event' | 'subscribe'
+      >
+    ) =>
+    <Result, Default = null>(...args: Parameters<Subscriber<Methods>>) => {
+      const [method, options = {}] = args
 
-    addEnabledEvent(method)
+      addSubscribedEvent(method)
 
-    return parent.subscribe<Result, Default>(method, {
-      ...(options as SubscribeOptions<Default, Result>),
-      OverrideGate: ChildGate
-    })
-  }
+      return parent[mapperMethod]<Result, Default>(method, {
+        ...(options as SubscribeOptions<Default, Result>),
+        OverrideGate: ChildGate
+      })
+    }
 
   const publisher = <P = void>(
     ...[method, options = {}]: Parameters<Publisher<Methods>>
@@ -60,7 +67,9 @@ export const scope = <Methods extends Record<string, string>>(
   return {
     ...parent,
     Gate: ChildGate,
+    event: subscribeMapper('event') as Event<Methods>,
     publisher,
-    subscribe
+    restore: subscribeMapper('restore') as Restore<Methods>,
+    subscribe: subscribeMapper('subscribe') as Subscriber<Methods>
   }
 }
