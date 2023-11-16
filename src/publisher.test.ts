@@ -55,7 +55,7 @@ describe('publisher', () => {
 
     expect(attach).toHaveBeenCalledTimes(1)
 
-    expect(sample).toHaveBeenCalledTimes(1)
+    expect(sample).toHaveBeenCalledTimes(2)
 
     const mockSocket = { emit: jest.fn() }
 

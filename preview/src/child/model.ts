@@ -8,8 +8,6 @@ import { postsSchema } from './schema'
 export const childModel = atom(() => {
   const child = scope(homeModel.socket)
 
-  const fetchPosts = child.publisher('fetchPosts')
-
   const $posts = child.restore<Post[]>('postsReceived', {
     default: [],
     publish: {
@@ -20,7 +18,6 @@ export const childModel = atom(() => {
 
   return {
     $posts,
-    fetchPosts,
     socket: child
   }
 })

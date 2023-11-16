@@ -50,7 +50,7 @@ export const scope = <Methods extends Record<string, string>>(
       addSubscribedEvent(method)
 
       return parent[mapperMethod]<Result, Default>(method, {
-        ...(options as SubscribeOptions<Default, Result>),
+        ...(options as SubscribeOptions<Default, Result, Methods>),
         OverrideGate: ChildGate
       })
     }

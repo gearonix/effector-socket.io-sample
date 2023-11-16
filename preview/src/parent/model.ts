@@ -12,6 +12,7 @@ export const homeModel = atom(() => {
     prefix: 'payload',
     uri: 'http://localhost:6868'
   })
+
   const messageSent = socket.event<Message>('messageSent')
 
   const sendMessage = socket.publisher<Pick<Message, 'message'>>('sendMessage')
