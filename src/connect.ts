@@ -4,13 +4,13 @@ import { sample }                   from 'effector'
 import { createGate }               from 'effector-react'
 import { io }                       from 'socket.io-client'
 
-import { createPublisher }          from './publisher'
+import { publisherMapper }          from './publisher'
 import { NoUriOrInstanceException } from './shared/exceptions'
 import { createLogger }             from './shared/lib'
 import { ConnectedInstance }        from './shared/types'
 import { ConnectOptions }           from './shared/types'
 import { ContextProps }             from './shared/types'
-import { createSubscriber }         from './subscribe'
+import { subscriberMapper }         from './subscribe'
 
 export const connect = <Methods extends Record<string, string>>(
   opts: ConnectOptions<Methods>
@@ -37,7 +37,7 @@ export const connect = <Methods extends Record<string, string>>(
 
   const log = createLogger(opts.logger)
 
-  const preparedProps: ContextProps<Methods> = {
+  const contextProps: ContextProps<Methods> = {
     $instance,
     Gate: WebsocketGate,
     log,
@@ -47,9 +47,9 @@ export const connect = <Methods extends Record<string, string>>(
   return {
     $instance,
     Gate: WebsocketGate,
-    event: createSubscriber(preparedProps, 'event'),
-    publisher: createPublisher(preparedProps),
-    restore: createSubscriber(preparedProps, 'restore'),
-    subscribe: createSubscriber(preparedProps)
+    event: subscriberMapper(contextProps, 'event'),
+    publisher: publisherMapper(contextProps),
+    restore: subscriberMapper(contextProps, 'restore'),
+    subscribe: subscriberMapper(contextProps)
   }
 }

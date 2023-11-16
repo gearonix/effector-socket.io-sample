@@ -1,18 +1,18 @@
-import { createPublisher }  from '../../publisher'
-import { createSubscriber } from '../../subscribe'
+import { publisherMapper }  from '../../publisher'
+import { subscriberMapper } from '../../subscribe'
 
 export type Subscriber<Methods extends Record<string, string>> = ReturnType<
-  typeof createSubscriber<Methods>
+  typeof subscriberMapper<Methods>
 >
 
 export type Publisher<Methods extends Record<string, string>> = ReturnType<
-  typeof createPublisher<Methods>
+  typeof publisherMapper<Methods>
 >
 
 export type Restore<Methods extends Record<string, string>> = ReturnType<
-  typeof createSubscriber<Methods, 'restore'>
+  typeof subscriberMapper<Methods, 'restore'>
 >
 
 export type Event<Methods extends Record<string, string>> = ReturnType<
-  typeof createSubscriber<Methods, 'event'>
+  typeof subscriberMapper<Methods, 'event'>
 >

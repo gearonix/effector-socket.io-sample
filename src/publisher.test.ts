@@ -7,7 +7,7 @@ import { createGate }      from 'effector-react'
 import { Gate }            from 'effector-react'
 import { Socket }          from 'socket.io-client'
 
-import { createPublisher } from './publisher'
+import { publisherMapper } from './publisher'
 import { ConnectOptions }  from './shared/types'
 
 jest.mock('effector', () => ({
@@ -21,7 +21,7 @@ describe('publisher', () => {
   let $instance: Store<Nullable<Socket>>
   let log: jest.Mock
   let opts: ConnectOptions<Record<string, string>>
-  let publisher: ReturnType<typeof createPublisher>
+  let publisher: ReturnType<typeof publisherMapper>
 
   beforeEach(() => {
     MockGate = createGate()
@@ -32,7 +32,7 @@ describe('publisher', () => {
         someMethod: 'some.method'
       }
     }
-    publisher = createPublisher({ $instance, Gate: MockGate, log, opts })
+    publisher = publisherMapper({ $instance, Gate: MockGate, log, opts })
   })
 
   afterEach(() => {

@@ -31,7 +31,7 @@ type SubscriberResult<T, R, D> = T extends 'restore'
   ? Event<SubscribeValue<R, D>>
   : [Event<SubscribeValue<R, D>>, Store<SubscribeValue<R, D>>]
 
-export const createSubscriber = <
+export const subscriberMapper = <
   Methods extends Record<string, string>,
   R extends SubscriberReturnMappers | void = void
 >(

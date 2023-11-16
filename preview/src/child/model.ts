@@ -14,6 +14,9 @@ export const childModel = atom(() => {
     default: [],
     schema: postsSchema
   })
+
+  fetchPosts()
+
   return {
     $posts,
     fetchPosts,
