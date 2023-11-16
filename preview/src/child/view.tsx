@@ -1,3 +1,5 @@
+import                     '../parent/style.css'
+
 import { useGate }    from 'effector-react'
 import { useUnit }    from 'effector-react'
 
@@ -8,5 +10,9 @@ export const Child = () => {
 
   const posts = useUnit(childModel.$posts)
 
-  return <div>234{posts?.map((post) => <div>post {post.title}</div>)}</div>
+  return (
+    <div className="message-list">
+      {posts?.map((post) => <div>post {post.title.slice(0, 20)}</div>)}
+    </div>
+  )
 }

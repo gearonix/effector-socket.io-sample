@@ -41,23 +41,12 @@ io.on('connection', (socket) => {
   })
 
   socket.on('namespace.fetch-posts', async () => {
-    // const posts = await axios.get<Post[]>(
-    //   'https://jsonplaceholder.typicode.com/posts'
-    // )
-    //
-    // console.log(posts)
-
-    const posts: Post[] = [
-      {
-        body: 'hbody',
-        id: 2,
-        title: 'hello',
-        userId: 1
-      }
-    ]
+    const posts = await axios.get<Post[]>(
+      'https://jsonplaceholder.typicode.com/posts'
+    )
 
     socket.emit('namespace.posts-received', {
-      payload: posts.slice(0, 10),
+      payload: posts.data.slice(0, 10),
       timestamp: new Date().getTime()
     })
   })

@@ -3,6 +3,7 @@ import { createStore }           from 'effector'
 import { sample }                from 'effector'
 import { createGate }            from 'effector-react'
 
+import { createArrayStore }      from './shared/lib/effector'
 import { ConnectedInstanceKeys } from './shared/types'
 import { Event }                 from './shared/types'
 import { Restore }               from './shared/types'
@@ -17,12 +18,7 @@ export const scope = <Methods extends Record<string, string>>(
 ): ConnectedScope<Methods> => {
   const ChildGate = createGate<unknown>()
 
-  const addSubscribedEvent = createEvent<string>()
-  const clearSubscriberEvents = createEvent<void>()
-
-  const $subscribedEvents = createStore<string[]>([])
-    .on(addSubscribedEvent, (events, method) => [...events, method])
-    .reset(clearSubscriberEvents)
+  const subscribedEvents = createArrayStore<string>()
 
   sample({
     clock: ChildGate.close,
@@ -32,10 +28,10 @@ export const scope = <Methods extends Record<string, string>>(
       })
     },
     source: {
-      events: $subscribedEvents,
+      events: subscribedEvents.$items,
       instance: parent.$instance
     },
-    target: clearSubscriberEvents
+    target: subscribedEvents.reset
   })
 
   const subscribeMapper = (
@@ -47,7 +43,7 @@ export const scope = <Methods extends Record<string, string>>(
     <Result, Default = null>(...args: Parameters<Subscriber<Methods>>) => {
       const [method, options = {}] = args
 
-      addSubscribedEvent(method)
+      subscribedEvents.add(method)
 
       return parent[mapperMethod]<Result, Default>(method, {
         ...(options as SubscribeOptions<Default, Result, Methods>),

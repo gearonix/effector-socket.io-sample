@@ -1,5 +1,4 @@
 import { Nullable }                from '@grnx-utils/types'
-import { Undefinable }             from '@grnx-utils/types'
 import { createEvent }             from 'effector'
 import { createStore }             from 'effector'
 import { Event }                   from 'effector'
@@ -50,6 +49,7 @@ export const subscriberMapper = <
     options?: SubscribeOptions<Default, Result, Methods>
   ): SubscriberResult<R, Result, Default> => {
     const doneData = createEvent<Result | Nullable<Default>>()
+    const $isMounted = options?.OverrideGate?.status ?? Gate.status
 
     const $result = createStore<Result | Nullable<Default>>(
       options?.default ?? null
@@ -79,13 +79,13 @@ export const subscriberMapper = <
         }
 
         if (options?.schema) {
-          const transformed = validateZodSchema<Result>(
+          const parsedSchema = validateZodSchema<Result>(
             options.schema,
             payload,
             currentMethod
           )
 
-          return transformed && doneData(transformed)
+          return parsedSchema && doneData(parsedSchema)
         }
 
         doneData(payload)
@@ -93,7 +93,7 @@ export const subscriberMapper = <
     }
 
     sample({
-      clock: [$instance, options?.OverrideGate?.status ?? Gate.status],
+      clock: [$instance, $isMounted],
       filter: (ins, status) => Boolean(ins && status),
       fn: (instance) => subscribe(instance!),
       source: $instance
@@ -101,7 +101,7 @@ export const subscriberMapper = <
 
     sample({
       clock: doneData,
-      filter: options?.OverrideGate?.status ?? Gate.status,
+      filter: $isMounted,
       target: $result
     })
 
