@@ -18,8 +18,6 @@ export const childModel = atom(() => {
     schema: postsSchema
   })
 
-  // fetchPosts()
-
   return {
     $posts,
     fetchPosts,

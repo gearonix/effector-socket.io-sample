@@ -32,13 +32,11 @@ export interface SubscribeOptions<
 
 type SubscriberReturnMappers = 'restore' | 'event'
 
-type SubscribeValue<R, D> = R | Nullable<D>
-
 type SubscriberResult<T, R, D> = T extends 'restore'
-  ? Store<SubscribeValue<R, D>>
+  ? Store<R | Nullable<D>>
   : T extends 'event'
-  ? Event<SubscribeValue<R, D>>
-  : [Event<SubscribeValue<R, D>>, Store<SubscribeValue<R, D>>]
+  ? Event<R>
+  : [Event<R>, Store<R | Nullable<D>>]
 
 export const subscriberMapper = <
   Methods extends Record<string, string>,

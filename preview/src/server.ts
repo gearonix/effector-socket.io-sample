@@ -23,22 +23,19 @@ const io = new Server(server, {
 
 app.use(cors(corsConfig))
 
-// eslint-disable-next-line
-const messages: Message[] = []
-
 export interface IncomingMessage {
   payload: Pick<Message, 'message'>
 }
 
 io.on('connection', (socket) => {
   socket.on('namespace.send-message', async ({ payload }: IncomingMessage) => {
-    messages.push({
+    const newMessage = {
       id: v4(),
       message: payload.message
-    })
+    }
 
     socket.emit('namespace.message-sent', {
-      payload: messages,
+      payload: newMessage,
       timestamp: new Date().getTime()
     })
   })

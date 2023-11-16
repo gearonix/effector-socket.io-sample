@@ -1,1 +1,1 @@
-export { Child } from './child'
+export { Child } from './view'

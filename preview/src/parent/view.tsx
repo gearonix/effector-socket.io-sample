@@ -2,7 +2,7 @@ import { useGate }   from 'effector-react'
 import { useUnit }   from 'effector-react'
 import { useState }  from 'react'
 
-import { Child }     from '../child/child.tsx'
+import { Child }     from '../child/view.tsx'
 import { Message }   from '../shared/interfaces.ts'
 import { homeModel } from './model.ts'
 
@@ -22,12 +22,12 @@ export const Parent = () => {
     sendMessage({ message: 'Hello world!' })
   }
 
-  console.log(messages)
-
   return (
     <div>
       <button onClick={onClick}>send msg</button>
-      {messages?.map((msg: Message) => <div>{msg.message}</div>)}
+      {messages.map((msg: Message) => (
+        <div>{msg.message}</div>
+      ))}
 
       <button onClick={toggleChild}>toggleChild</button>
       {isChildOpen && <Child />}
