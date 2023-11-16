@@ -11,7 +11,7 @@ export const childModel = atom(() => {
   const $posts = child.restore<Post[]>('postsReceived', {
     default: [],
     publish: {
-      method: 'fetchPosts'
+      method: 'getPosts'
     },
     schema: postsSchema
   })

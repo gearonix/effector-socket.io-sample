@@ -40,7 +40,7 @@ io.on('connection', (socket) => {
     })
   })
 
-  socket.on('namespace.fetch-posts', async () => {
+  socket.on('namespace.get-posts', async () => {
     const posts = await axios.get<Post[]>(
       'https://jsonplaceholder.typicode.com/posts'
     )
