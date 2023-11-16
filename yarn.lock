@@ -3419,6 +3419,12 @@ __metadata:
     ts-jest: ^28.0.7
     typescript: ^5.0.2
     zod: ^3.22.4
+  peerDependencies:
+    effector: ^22.8.7
+    effector-react: ^22.5.4
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    zod: ^3.22.4
   languageName: unknown
   linkType: soft
 
