@@ -1,6 +1,6 @@
 {
-  "name": "effector-socket.io",
-  "version": "0.0.0-set-by-ci",
+  "name": "@grnx/effector-socket.io",
+  "version": "0.0.6-set-by-ci",
   "description": "Your Library Description",
   "author": "Uzhanin Egor",
   "main": "dist/index.js",

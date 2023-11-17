@@ -31,24 +31,24 @@ export interface SubscribeOptions<
 
 type SubscriberReturnMappers = 'restore' | 'event'
 
-type SubscriberResult<T, R, D> = T extends 'restore'
-  ? Store<R | Nullable<D>>
+type SubscriberResult<T, R> = T extends 'restore'
+  ? Store<R>
   : T extends 'event'
   ? Event<R>
-  : [Event<R>, Store<R | Nullable<D>>]
+  : [Event<R>, Store<R>]
 
 export const subscriberMapper = <
   Methods extends Record<string, string>,
-  R extends SubscriberReturnMappers | void = void
+  Mapper extends SubscriberReturnMappers | void = void
 >(
   { $instance, Gate, log, opts }: ContextProps<Methods>,
-  resultMapper?: R
+  resultMapper?: Mapper
 ) => {
   return <Result, Default = Result>(
     currentMethod: Extract<keyof Methods, string>,
     options?: SubscribeOptions<Default, Result, Methods>
-  ): SubscriberResult<R, Result, Default> => {
-    const doneData = createEvent<Result | Nullable<Default>>()
+  ): SubscriberResult<Mapper, Result> => {
+    const doneData = createEvent<Result>()
     const $isMounted = options?.OverrideGate?.status ?? Gate.status
 
     const $result = createStore<Result | Nullable<Default>>(
@@ -56,7 +56,6 @@ export const subscriberMapper = <
     )
 
     const subscribe = (instance: Socket) => {
-      console.log(instance)
       const methodToSend = parseMethodToSend(opts.methods, currentMethod)
 
       if (options?.publish) {
@@ -76,8 +75,7 @@ export const subscriberMapper = <
         const payload = unwrapPayloadWithPrefix<Result>(opts.prefix, data)
 
         if (!payload) {
-          log('empty response from the server', currentMethod, 'warn')
-          return
+          return log('empty response from the server', currentMethod, 'warn')
         }
 
         if (options?.schema) {
@@ -111,11 +109,11 @@ export const subscriberMapper = <
     })
 
     if (!resultMapper) {
-      return [doneData, $result] as SubscriberResult<R, Result, Default>
+      return [doneData, $result] as SubscriberResult<Mapper, Result>
     }
 
     const resultToReturn = resultMapper === 'restore' ? $result : doneData
 
-    return resultToReturn as SubscriberResult<R, Result, Default>
+    return resultToReturn as SubscriberResult<Mapper, Result>
   }
 }
