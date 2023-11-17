@@ -56,11 +56,13 @@ export const subscriberMapper = <
     )
 
     const subscribe = (instance: Socket) => {
+      console.log(instance)
       const methodToSend = parseMethodToSend(opts.methods, currentMethod)
 
       if (options?.publish) {
         const { method, params } = options.publish
 
+        // TODO: refactor this
         const mapper = publisherMapper({ $instance, Gate, log, opts })
         const publish = mapper<unknown>(method)
 
@@ -93,10 +95,13 @@ export const subscriberMapper = <
     }
 
     sample({
-      clock: [$instance, $isMounted],
-      filter: (ins, status) => Boolean(ins && status),
-      fn: (instance) => subscribe(instance!),
-      source: $instance
+      clock: [$isMounted, $instance],
+      filter: ({ instance, isMounted }) => Boolean(isMounted && instance),
+      fn: ({ instance }) => subscribe(instance!),
+      source: {
+        instance: $instance,
+        isMounted: $isMounted
+      }
     })
 
     sample({
