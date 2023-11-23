@@ -8,11 +8,11 @@ export const Child = () => {
 
   const posts = useUnit(childModel.$posts)
 
-  console.log(posts)
-
   return (
     <div className="message-list">
-      {posts?.map((post) => <div key={post.id}>{post.title.slice(0, 20)}</div>)}
+      {posts.map((post) => (
+        <div key={post.id}>{post.title.slice(0, 20)}</div>
+      ))}
     </div>
   )
 }

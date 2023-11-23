@@ -19,7 +19,7 @@ export const connect = <Methods extends Record<string, string>>(
     throw new NoUriOrInstanceException()
   }
 
-  const WebsocketGate = createGate<unknown>()
+  const WebsocketGate = opts.Gate ?? createGate<unknown>()
 
   const getSocketInstanceFx = createEffect(
     () => opts.instance ?? io(opts.uri!, opts.options)

@@ -19,6 +19,7 @@ export interface ConnectOptions<Methods extends Record<string, string>> {
   options?: Undefinable<Partial<ManagerOptions & SocketOptions>>
   prefix?: string
   logger?: boolean
+  Gate?: Gate<unknown>
 }
 
 export interface ContextProps<Methods extends Record<string, string>> {
