@@ -44,3 +44,5 @@ export type ConnectedInstanceKeys = keyof ConnectedInstance<
 
 export type ConnectedScope<Methods extends Record<string, string>> =
   ConnectedInstance<Methods>
+
+// export type WebsocketMethods = Record<string, string>

@@ -37,18 +37,31 @@ type SubscriberResult<T, R> = T extends 'restore'
   ? Event<R>
   : [Event<R>, Store<R>]
 
-export const subscriberMapper = <
+export const applySubscriber = <
+  Mapper extends SubscriberReturnMappers | void = void
+>(
+  mapper?: Mapper
+) => {
+  return <Methods extends Record<string, string>>(
+    contextProps: ContextProps<Methods>
+  ) => {
+    subscribe(contextProps, mapper)
+  }
+}
+
+export const subscribe = <
   Methods extends Record<string, string>,
   Mapper extends SubscriberReturnMappers | void = void
 >(
   { $instance, Gate, log, opts }: ContextProps<Methods>,
-  resultMapper?: Mapper
+  mapper?: Mapper
 ) => {
   return <Result, Default = Result>(
     currentMethod: Extract<keyof Methods, string>,
     options?: SubscribeOptions<Default, Result, Methods>
   ): SubscriberResult<Mapper, Result> => {
     const doneData = createEvent<Result>()
+
     const $isMounted = options?.OverrideGate?.status ?? Gate.status
 
     const $result = createStore<Result | Nullable<Default>>(
@@ -108,12 +121,18 @@ export const subscriberMapper = <
       target: $result
     })
 
-    if (!resultMapper) {
+    if (!mapper) {
       return [doneData, $result] as SubscriberResult<Mapper, Result>
     }
 
-    const resultToReturn = resultMapper === 'restore' ? $result : doneData
+    const resultToReturn = mapper === 'restore' ? $result : doneData
 
     return resultToReturn as SubscriberResult<Mapper, Result>
   }
+}
+
+export const subscriber = {
+  event: applySubscriber('event'),
+  restore: applySubscriber('restore'),
+  subscribe: applySubscriber()
 }
