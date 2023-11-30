@@ -1,0 +1,1 @@
+export { subscribeMapper } from './mapper'

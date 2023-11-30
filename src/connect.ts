@@ -1,16 +1,16 @@
-import { createEffect }             from 'effector'
-import { restore }                  from 'effector'
-import { sample }                   from 'effector'
-import { createGate }               from 'effector-react'
-import { io }                       from 'socket.io-client'
+import { createEffect }                 from 'effector'
+import { restore }                      from 'effector'
+import { sample }                       from 'effector'
+import { createGate }                   from 'effector-react'
+import { io }                           from 'socket.io-client'
 
-import { publisherMapper }          from './publisher'
-import { NoUriOrInstanceException } from './shared/exceptions'
-import { createLogger }             from './shared/lib'
-import { ConnectedInstance }        from './shared/types'
-import { ConnectOptions }           from './shared/types'
-import { ContextProps }             from './shared/types'
-import { subscriberMapper }         from './subscribe'
+import { publisherMapper }              from './publisher'
+import { NoUriOrInstanceException }     from './shared/exceptions'
+import { createLogger }                 from './shared/lib'
+import { ConnectedInstance }            from './shared/types'
+import { ConnectOptions }               from './shared/types'
+import { ContextProps }                 from './shared/types'
+import { subscribeMapper as subscribe } from './subscribe'
 
 export const connect = <Methods extends Record<string, string>>(
   opts: ConnectOptions<Methods>
@@ -47,9 +47,9 @@ export const connect = <Methods extends Record<string, string>>(
   return {
     $instance,
     Gate: WebsocketGate,
-    event: subscriberMapper(contextProps, 'event'),
+    event: subscribe.event,
     publisher: publisherMapper(contextProps),
-    restore: subscriberMapper(contextProps, 'restore'),
-    subscribe: subscriberMapper(contextProps)
+    restore: subscribe.restore,
+    subscribe: subscribe.default
   }
 }

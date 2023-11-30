@@ -1,53 +1,18 @@
+import { ContextProps }            from '@core'
 import { Nullable }                from '@grnx-utils/types'
 import { createEvent }             from 'effector'
 import { createStore }             from 'effector'
-import { Event }                   from 'effector'
 import { sample }                  from 'effector'
-import { Store }                   from 'effector'
-import { Gate }                    from 'effector-react'
 import { Socket }                  from 'socket.io-client'
-import { z }                       from 'zod'
 
-import { publisherMapper }         from './publisher'
-import { parseMethodToSend }       from './shared/lib'
-import { unwrapPayloadWithPrefix } from './shared/lib'
-import { validateZodSchema }       from './shared/lib'
-import { Wrap }                    from './shared/lib'
-import { ContextProps }            from './shared/types'
-
-export interface SubscribeOptions<
-  Default,
-  Result,
-  Methods = Record<string, string>
-> {
-  default?: Default
-  schema?: z.ZodSchema<Result>
-  publish?: {
-    method: Extract<keyof Methods, string>
-    params?: unknown
-  }
-  OverrideGate?: Gate<unknown>
-}
-
-type SubscriberReturnMappers = 'restore' | 'event'
-
-type SubscriberResult<T, R> = T extends 'restore'
-  ? Store<R>
-  : T extends 'event'
-  ? Event<R>
-  : [Event<R>, Store<R>]
-
-export const applySubscriber = <
-  Mapper extends SubscriberReturnMappers | void = void
->(
-  mapper?: Mapper
-) => {
-  return <Methods extends Record<string, string>>(
-    contextProps: ContextProps<Methods>
-  ) => {
-    subscribe(contextProps, mapper)
-  }
-}
+import { publisherMapper }         from '../publisher'
+import { parseMethodToSend }       from '../shared/lib'
+import { unwrapPayloadWithPrefix } from '../shared/lib'
+import { validateZodSchema }       from '../shared/lib'
+import { Wrap }                    from '../shared/lib'
+import { SubscribeOptions }        from './interfaces'
+import { SubscriberResult }        from './interfaces'
+import { SubscriberReturnMappers } from './interfaces'
 
 export const subscribe = <
   Methods extends Record<string, string>,
@@ -129,10 +94,4 @@ export const subscribe = <
 
     return resultToReturn as SubscriberResult<Mapper, Result>
   }
-}
-
-export const subscriber = {
-  event: applySubscriber('event'),
-  restore: applySubscriber('restore'),
-  subscribe: applySubscriber()
 }
