@@ -39,8 +39,6 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@grnx-utils/eslint": "^3.0.2",
-    "@grnx-utils/types": "^1.0.2",
     "@rollup/plugin-typescript": "^11.1.6",
     "@types/jest": "^28.1.8",
     "@types/react": "^18.2.57",
