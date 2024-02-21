@@ -1,4 +1,4 @@
-## effector-socket.io
+## @grnx/effector-socket.io
 
 > [!CAUTION]
 > This library is just an integration attempt.
