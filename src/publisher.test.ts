@@ -1,14 +1,9 @@
-import { Nullable }        from '@grnx-utils/types'
-import { attach }          from 'effector'
-import { createStore }     from 'effector'
-import { sample }          from 'effector'
-import { Store }           from 'effector'
-import { createGate }      from 'effector-react'
-import { Gate }            from 'effector-react'
-import { Socket }          from 'socket.io-client'
-
+import { Nullable } from '@grnx-utils/types'
+import { attach, createStore, sample, Store } from 'effector'
+import { createGate, Gate } from 'effector-react'
+import { Socket } from 'socket.io-client'
 import { publisherMapper } from './publisher'
-import { ConnectOptions }  from './shared/types'
+import { ConnectOptions } from './shared/types'
 
 jest.mock('effector', () => ({
   ...jest.requireActual('effector'),

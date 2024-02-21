@@ -1,12 +1,8 @@
-import { attach }                from 'effector'
-import { createEvent }           from 'effector'
-import { sample }                from 'effector'
-import { Gate }                  from 'effector-react'
-
-import { parseMethodToSend }     from './shared/lib'
-import { wrapPayloadWithPrefix } from './shared/lib'
-import { createArrayStore }      from './shared/lib/effector'
-import { ContextProps }          from './shared/types'
+import { attach, createEvent, sample } from 'effector'
+import { Gate } from 'effector-react'
+import { parseMethodToSend, wrapPayloadWithPrefix } from './shared/lib'
+import { createArrayStore } from './shared/lib/effector'
+import { ContextProps } from './shared/types'
 
 export interface PublisherOptions {
   OverrideGate?: Gate<unknown>

@@ -1,4 +1,4 @@
-import { publisherMapper }  from '../../publisher'
+import { publisherMapper } from '../../publisher'
 import { subscriberMapper } from '../../subscribe'
 
 export type Subscriber<Methods extends Record<string, string>> = ReturnType<

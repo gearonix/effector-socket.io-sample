@@ -1,16 +1,11 @@
-import { createEffect }             from 'effector'
-import { restore }                  from 'effector'
-import { sample }                   from 'effector'
-import { createGate }               from 'effector-react'
-import { io }                       from 'socket.io-client'
-
-import { publisherMapper }          from './publisher'
+import { createEffect, restore, sample } from 'effector'
+import { createGate } from 'effector-react'
+import { io } from 'socket.io-client'
+import { publisherMapper } from './publisher'
 import { NoUriOrInstanceException } from './shared/exceptions'
-import { createLogger }             from './shared/lib'
-import { ConnectedInstance }        from './shared/types'
-import { ConnectOptions }           from './shared/types'
-import { ContextProps }             from './shared/types'
-import { subscriberMapper }         from './subscribe'
+import { createLogger } from './shared/lib'
+import { ConnectedInstance, ConnectOptions, ContextProps } from './shared/types'
+import { subscriberMapper } from './subscribe'
 
 export const connect = <Methods extends Record<string, string>>(
   opts: ConnectOptions<Methods>

@@ -1,5 +1,5 @@
 import { MethodNotAllowedException } from '../exceptions'
-import { parseMethodToSend }         from './parse-method'
+import { parseMethodToSend } from './parse-method'
 
 describe('parseMethodToSend', () => {
   const methods = {

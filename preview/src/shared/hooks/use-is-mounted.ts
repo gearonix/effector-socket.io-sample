@@ -1,6 +1,4 @@
-import { useCallback } from 'react'
-import { useEffect }   from 'react'
-import { useState }    from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 export const useIsMounted = () => {
   const [isLoaded, setIsLoaded] = useState(false)

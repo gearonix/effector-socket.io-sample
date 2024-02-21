@@ -1,12 +1,10 @@
-import typescript        from '@rollup/plugin-typescript'
-import { defineConfig }  from 'rollup'
-import { RollupOptions } from 'rollup'
-import bundleSize        from 'rollup-plugin-bundle-size'
-import dts               from 'rollup-plugin-dts'
-import esbuild           from 'rollup-plugin-esbuild'
-import { terser }        from 'rollup-plugin-terser'
-
-import pkg               from './package.json'
+import typescript from '@rollup/plugin-typescript'
+import { defineConfig, RollupOptions } from 'rollup'
+import bundleSize from 'rollup-plugin-bundle-size'
+import dts from 'rollup-plugin-dts'
+import esbuild from 'rollup-plugin-esbuild'
+import { terser } from 'rollup-plugin-terser'
+import pkg from './package.json'
 
 const TYPECHECK = true
 const MINIFY = true

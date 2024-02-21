@@ -1,6 +1,5 @@
-import { ReactNode }  from 'react'
+import { ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
-
 import { Entrypoint } from './src/entrypoint'
 
 const rootElement = document.querySelector('#app')

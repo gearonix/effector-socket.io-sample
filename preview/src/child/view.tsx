@@ -1,6 +1,4 @@
-import { useGate }    from 'effector-react'
-import { useUnit }    from 'effector-react'
-
+import { useGate, useUnit } from 'effector-react'
 import { childModel } from './model'
 
 export const Child = () => {

@@ -1,5 +1,4 @@
-import { AnyObject }                 from '@grnx-utils/types'
-
+import { AnyObject } from '@grnx-utils/types'
 import { MethodNotAllowedException } from '../exceptions'
 
 export const parseMethodToSend = <Methods extends AnyObject>(

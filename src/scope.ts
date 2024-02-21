@@ -1,15 +1,16 @@
-import { sample }                from 'effector'
-import { createGate }            from 'effector-react'
-
-import { createArrayStore }      from './shared/lib/effector'
-import { ConnectedInstance }     from './shared/types'
-import { ConnectedInstanceKeys } from './shared/types'
-import { ConnectedScope }        from './shared/types'
-import { Event }                 from './shared/types'
-import { Publisher }             from './shared/types'
-import { Restore }               from './shared/types'
-import { Subscriber }            from './shared/types'
-import { SubscribeOptions }      from './subscribe'
+import { sample } from 'effector'
+import { createGate } from 'effector-react'
+import { createArrayStore } from './shared/lib/effector'
+import {
+  ConnectedInstance,
+  ConnectedInstanceKeys,
+  ConnectedScope,
+  Event,
+  Publisher,
+  Restore,
+  Subscriber
+} from './shared/types'
+import { SubscribeOptions } from './subscribe'
 
 export const scope = <Methods extends Record<string, string>>(
   parent: ConnectedInstance<Methods>
@@ -32,7 +33,8 @@ export const scope = <Methods extends Record<string, string>>(
     target: subscribedEvents.reset
   })
 
-  const subscribeMapper = (
+  const subscribeMapper =
+    (
       mapperMethod: Extract<
         ConnectedInstanceKeys,
         'restore' | 'event' | 'subscribe'

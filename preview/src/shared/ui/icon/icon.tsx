@@ -1,8 +1,7 @@
-import      clsx             from 'clsx'
-import type { SVGProps }     from 'react'
-
-import type { SpritesMap }   from './sprite.gen'
-import      { SPRITES_META } from './sprite.gen'
+import clsx from 'clsx'
+import type { SVGProps } from 'react'
+import type { SpritesMap } from './sprite.gen'
+import { SPRITES_META } from './sprite.gen'
 
 export interface IconProps extends SVGProps<SVGSVGElement> {
   name: AnyIconName
@@ -24,7 +23,8 @@ export const Icon = ({ className, name, ...props }: IconProps) => {
       data-axis={axis}
       focusable="false"
       aria-hidden
-      {...props}>
+      {...props}
+    >
       <use href={`/sprites/${filePath}#${iconName}`} />
     </svg>
   )

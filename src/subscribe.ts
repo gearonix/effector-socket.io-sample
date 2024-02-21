@@ -1,19 +1,16 @@
-import { Nullable }                from '@grnx-utils/types'
-import { createEvent }             from 'effector'
-import { createStore }             from 'effector'
-import { Event }                   from 'effector'
-import { sample }                  from 'effector'
-import { Store }                   from 'effector'
-import { Gate }                    from 'effector-react'
-import { Socket }                  from 'socket.io-client'
-import { z }                       from 'zod'
-
-import { publisherMapper }         from './publisher'
-import { parseMethodToSend }       from './shared/lib'
-import { unwrapPayloadWithPrefix } from './shared/lib'
-import { validateZodSchema }       from './shared/lib'
-import { Wrap }                    from './shared/lib'
-import { ContextProps }            from './shared/types'
+import { Nullable } from '@grnx-utils/types'
+import { createEvent, createStore, Event, sample, Store } from 'effector'
+import { Gate } from 'effector-react'
+import { Socket } from 'socket.io-client'
+import { z } from 'zod'
+import { publisherMapper } from './publisher'
+import {
+  parseMethodToSend,
+  unwrapPayloadWithPrefix,
+  validateZodSchema,
+  Wrap
+} from './shared/lib'
+import { ContextProps } from './shared/types'
 
 export interface SubscribeOptions<
   Default,
@@ -34,8 +31,8 @@ type SubscriberReturnMappers = 'restore' | 'event'
 type SubscriberResult<T, R> = T extends 'restore'
   ? Store<R>
   : T extends 'event'
-  ? Event<R>
-  : [Event<R>, Store<R>]
+    ? Event<R>
+    : [Event<R>, Store<R>]
 
 export const subscriberMapper = <
   Methods extends Record<string, string>,
@@ -68,28 +65,28 @@ export const subscriberMapper = <
         publish(params)
       }
 
-      instance.off(methodToSend).on(methodToSend, (
-        data: Wrap<Result> | Result
-      ) => {
-        log('received response from server', currentMethod)
-        const payload = unwrapPayloadWithPrefix<Result>(opts.prefix, data)
+      instance
+        .off(methodToSend)
+        .on(methodToSend, (data: Wrap<Result> | Result) => {
+          log('received response from server', currentMethod)
+          const payload = unwrapPayloadWithPrefix<Result>(opts.prefix, data)
 
-        if (!payload) {
-          return log('empty response from the server', currentMethod, 'warn')
-        }
+          if (!payload) {
+            return log('empty response from the server', currentMethod, 'warn')
+          }
 
-        if (options?.schema) {
-          const parsedSchema = validateZodSchema<Result>(
-            options.schema,
-            payload,
-            currentMethod
-          )
+          if (options?.schema) {
+            const parsedSchema = validateZodSchema<Result>(
+              options.schema,
+              payload,
+              currentMethod
+            )
 
-          return parsedSchema && doneData(parsedSchema)
-        }
+            return parsedSchema && doneData(parsedSchema)
+          }
 
-        doneData(payload)
-      })
+          doneData(payload)
+        })
     }
 
     sample({

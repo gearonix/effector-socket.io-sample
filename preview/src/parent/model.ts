@@ -1,10 +1,8 @@
-import { connect }     from '@core'
-import { createEvent } from 'effector'
-import { createStore } from 'effector'
-
-import { atom }        from '../shared/atom'
-import { Message }     from '../shared/interfaces'
-import { methods }     from './consts'
+import { connect } from '@core'
+import { createEvent, createStore } from 'effector'
+import { atom } from '../shared/atom'
+import { Message } from '../shared/interfaces'
+import { methods } from './consts'
 
 export const homeModel = atom(() => {
   const socket = connect({

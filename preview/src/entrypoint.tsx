@@ -1,10 +1,8 @@
-import                       './globals.css'
-
-import { clsx }         from 'clsx'
-
-import { Parent }       from './parent'
+import './globals.css'
+import { clsx } from 'clsx'
+import { Parent } from './parent'
 import { useIsMounted } from './shared/hooks'
-import { Icon }         from './shared/ui/icon'
+import { Icon } from './shared/ui/icon'
 
 const repoLink = 'https://github.com/gearonix/effector-socket.io'
 

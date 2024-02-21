@@ -1,8 +1,6 @@
-import { useGate }   from 'effector-react'
-import { useUnit }   from 'effector-react'
-
-import { Child }     from '../child'
-import { Message }   from '../shared/interfaces'
+import { useGate, useUnit } from 'effector-react'
+import { Child } from '../child'
+import { Message } from '../shared/interfaces'
 import { homeModel } from './model'
 
 export const Parent = () => {

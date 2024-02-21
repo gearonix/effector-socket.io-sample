@@ -1,16 +1,9 @@
-import { Nullable }       from '@grnx-utils/types'
-import { Undefinable }    from '@grnx-utils/types'
-import { Store }          from 'effector'
-import { Gate }           from 'effector-react'
-import { ManagerOptions } from 'socket.io-client'
-import { Socket }         from 'socket.io-client'
-import { SocketOptions }  from 'socket.io-client'
-
-import { createLogger }   from '../lib'
-import { Event }          from './methods'
-import { Publisher }      from './methods'
-import { Restore }        from './methods'
-import { Subscriber }     from './methods'
+import { Nullable, Undefinable } from '@grnx-utils/types'
+import { Store } from 'effector'
+import { Gate } from 'effector-react'
+import { ManagerOptions, Socket, SocketOptions } from 'socket.io-client'
+import { createLogger } from '../lib'
+import { Event, Publisher, Restore, Subscriber } from './methods'
 
 export interface ConnectOptions<Methods extends Record<string, string>> {
   uri?: string

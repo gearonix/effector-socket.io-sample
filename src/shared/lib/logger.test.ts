@@ -1,7 +1,6 @@
 /* eslint-disable max-len */
 
-import { createLogger } from './logger'
-import { highlight }    from './logger'
+import { createLogger, highlight } from './logger'
 
 describe('highlight function', () => {
   let mockConsoleLog: jest.SpyInstance

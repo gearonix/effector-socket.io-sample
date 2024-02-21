@@ -1,8 +1,8 @@
 /* eslint-disable effector/no-getState */
 
-import { connect }                  from './connect'
+import { connect } from './connect'
 import { NoUriOrInstanceException } from './shared/exceptions'
-import { ConnectOptions }           from './shared/types'
+import { ConnectOptions } from './shared/types'
 
 jest.mock('socket.io-client', () => ({
   io: jest.fn(() => ({

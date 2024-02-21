@@ -1,13 +1,10 @@
-import http              from 'http'
-import axios             from 'axios'
-import { AxiosResponse } from 'axios'
-import cors              from 'cors'
-import express           from 'express'
-import { Server }        from 'socket.io'
-import { v4 }            from 'uuid'
-
-import { Message }       from './shared/interfaces.ts'
-import { Post }          from './shared/interfaces.ts'
+import http from 'http'
+import axios from 'axios'
+import cors from 'cors'
+import express from 'express'
+import { Server } from 'socket.io'
+import { v4 } from 'uuid'
+import { Message, Post } from './shared/interfaces'
 
 const corsConfig = {
   methods: ['GET', 'POST', 'PUT', 'DELETE'],

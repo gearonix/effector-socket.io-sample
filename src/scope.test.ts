@@ -1,9 +1,6 @@
-import { createEvent }       from 'effector'
-import { createStore }       from 'effector'
-import { sample }            from 'effector'
-import { createGate }        from 'effector-react'
-
-import { scope }             from './scope'
+import { createEvent, createStore, sample } from 'effector'
+import { createGate } from 'effector-react'
+import { scope } from './scope'
 import { ConnectedInstance } from './shared/types'
 
 const actualEffector = jest.requireActual('effector')

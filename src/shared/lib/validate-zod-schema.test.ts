@@ -1,5 +1,4 @@
-import { z }                 from 'zod'
-
+import { z } from 'zod'
 import { validateZodSchema } from './validate-zod-schema'
 
 describe('validate-zod-schema', () => {

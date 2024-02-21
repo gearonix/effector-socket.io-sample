@@ -1,5 +1,4 @@
-import { createEvent } from 'effector'
-import { createStore } from 'effector'
+import { createEvent, createStore } from 'effector'
 
 export const createArrayStore = <P>() => {
   const add = createEvent<P>()

@@ -1,7 +1,6 @@
-import { Undefinable }       from '@grnx-utils/types'
-
+import { Undefinable } from '@grnx-utils/types'
 import { isWrappedResponse } from '../type-guards'
-import { Wrap }              from '../types/lib'
+import { Wrap } from '../types/lib'
 
 export const unwrapPayloadWithPrefix = <Result>(
   prefix: Undefinable<string>,
